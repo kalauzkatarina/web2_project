@@ -1,0 +1,5 @@
+{
+  "Values": {
+    "UserDbConnectionString": "Server=localhost,1434;Database=UserDB;User Id=sa;Password=TravelApp2026!#;TrustServerCertificate=True"
+  }
+}
