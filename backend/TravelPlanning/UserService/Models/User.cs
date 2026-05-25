@@ -21,7 +21,6 @@ namespace UserService.Models
             Email = email;
             Password = password;
             Role = role;
-            CreatedAt = DateTime.UtcNow;
         }
 
         public Guid Id { get; set; }
@@ -30,6 +29,6 @@ namespace UserService.Models
         public string Email { get; set; }
         public string Password { get; set; }
         public UserRole Role { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

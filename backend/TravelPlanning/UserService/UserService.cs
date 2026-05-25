@@ -6,17 +6,47 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
+using Microsoft.ServiceFabric.Services.Remoting.Runtime;
+using Microsoft.Extensions.DependencyInjection;
+using UserService.Context;
+using Microsoft.EntityFrameworkCore;
+using UserService.Interfaces;
+using UserService.Repositories;
+using UserService.Services;
+using Common.Interfaces;
+using Common.DTOs.user;
 
 namespace UserService
 {
     /// <summary>
     /// An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
-    internal sealed class UserService : StatelessService
+    internal sealed class UserService : StatelessService, IUserService
     {
+        private readonly ServiceProvider _serviceProvider;
         public UserService(StatelessServiceContext context)
             : base(context)
-        { }
+        {
+            var config = context.CodePackageActivationContext.GetConfigurationPackageObject("Config").Settings;
+            var sqlConn = config.Sections["DbConfig"].Parameters["UserDbConnectionString"].Value;
+
+            var services = new ServiceCollection();
+
+            services.AddDbContext<UserDbContext>(options => options.UseSqlServer(sqlConn));
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IAccountService, AccountService>();
+
+            _serviceProvider = services.BuildServiceProvider();
+        }
+
+        public async Task<bool> Register(RegisterDto registerDto)
+        {
+            using(var scope = _serviceProvider.CreateScope())
+            {
+                var businessService = scope.ServiceProvider.GetRequiredService<IAccountService>();
+                return await businessService.CreateUser(registerDto);
+            }
+        }
 
         /// <summary>
         /// Optional override to create listeners (e.g., TCP, HTTP) for this service replica to handle client or user requests.
@@ -24,7 +54,7 @@ namespace UserService
         /// <returns>A collection of listeners.</returns>
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
-            return new ServiceInstanceListener[0];
+            return this.CreateServiceRemotingInstanceListeners();
         }
 
         /// <summary>
