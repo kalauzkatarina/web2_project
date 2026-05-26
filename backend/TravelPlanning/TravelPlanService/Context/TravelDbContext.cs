@@ -16,6 +16,7 @@ namespace TravelPlanService.Context
         public DbSet<TravelPlan> TravelPlans { get; set; }
         public DbSet<Destination> Destinations { get; set; }
         public DbSet<Activity> Activities { get; set; }
+        public DbSet<ShareToken> ShareTokens { get; set;}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -38,6 +39,16 @@ namespace TravelPlanService.Context
                 .WithMany(d => d.Activities)
                 .HasForeignKey(a => a.DestinationId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ShareToken>().HasKey(s => s.Id);
+            modelBuilder.Entity<ShareToken>()
+              .Property(s => s.AccessType)
+              .HasConversion<string>();
+            modelBuilder.Entity<ShareToken>()
+               .HasOne<TravelPlan>()
+               .WithMany()
+               .HasForeignKey(s => s.PlanId)
+               .OnDelete(DeleteBehavior.Cascade);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
