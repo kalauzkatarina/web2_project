@@ -11,6 +11,9 @@ using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 using Microsoft.ServiceFabric.Data;
+using FluentValidation.AspNetCore;
+using Web_Api.Validators;
+using FluentValidation;
 
 namespace Web_Api
 {
@@ -44,6 +47,11 @@ namespace Web_Api
                                     .UseContentRoot(Directory.GetCurrentDirectory())
                                     .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.None)
                                     .UseUrls(url);
+
+                        builder.Services.AddFluentValidationAutoValidation(); //automatska validacija kontrolera
+                        builder.Services.AddFluentValidationClientsideAdapters(); //dodaje klijentske adaptere
+                        builder.Services.AddValidatorsFromAssemblyContaining<UserRegisterContractValidator>(); //registruje moj validator
+
                         builder.Services.AddControllers();
                         builder.Services.AddEndpointsApiExplorer();
                         builder.Services.AddSwaggerGen();

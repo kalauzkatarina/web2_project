@@ -15,6 +15,7 @@ using UserService.Repositories;
 using UserService.Services;
 using Common.Interfaces;
 using Common.DTOs.user;
+using Common.Models;
 
 namespace UserService
 {
@@ -33,18 +34,30 @@ namespace UserService
             var services = new ServiceCollection();
 
             services.AddDbContext<UserDbContext>(options => options.UseSqlServer(sqlConn));
+            services.AddSingleton<StatelessServiceContext>(context);
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IPasswordService,  PasswordService>();
+            services.AddScoped<IJwtService,  JwtService>();
 
             _serviceProvider = services.BuildServiceProvider();
         }
 
-        public async Task<bool> Register(RegisterDto registerDto)
+        public async Task<Result<string>> Login(LoginDto loginDto)
         {
             using(var scope = _serviceProvider.CreateScope())
             {
-                var businessService = scope.ServiceProvider.GetRequiredService<IAccountService>();
-                return await businessService.CreateUser(registerDto);
+                var accountService = scope.ServiceProvider.GetRequiredService<IAccountService>();
+                return await accountService.Login(loginDto);
+            }
+        }
+
+        public async Task<Result<bool>> Register(RegisterDto registerDto)
+        {
+            using(var scope = _serviceProvider.CreateScope())
+            {
+                var accountService = scope.ServiceProvider.GetRequiredService<IAccountService>();
+                return await accountService.CreateUser(registerDto);
             }
         }
 

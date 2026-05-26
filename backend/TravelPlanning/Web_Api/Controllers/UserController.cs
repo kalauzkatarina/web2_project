@@ -23,12 +23,27 @@ namespace Web_Api.Controllers
 
             var result = await _userService.Register(registerDto);
 
-            if (result)
+            if (result.IsSuccess)
             {
                 return Ok(new { Message = "User successfully registered!" });
             }
 
-            return BadRequest(new { Message = "User with this email already exists." });
+            return BadRequest(new { Message = result.ErrorMessage });
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        {
+            if (loginDto == null) return BadRequest(new { Message = "Login data is empty." });
+
+            var result = await _userService.Login(loginDto);
+
+            if (result.IsSuccess)
+            {
+                return Ok(new { Token = result.Data, Message = "Login successful!" });
+            }
+
+            return Unauthorized(new {Message = result.ErrorMessage});
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Common.DTOs.user;
+using Common.Models;
 using Microsoft.ServiceFabric.Services.Remoting;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace Common.Interfaces
 {
     public interface IUserService : IService
     {
-        Task<bool> Register(RegisterDto registerDto);
+        Task<Result<bool>> Register(RegisterDto registerDto);
+        Task<Result<string>> Login(LoginDto loginDto);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Common.DTOs.user;
+using Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace UserService.Interfaces
 {
     public interface IAccountService
     {
-        Task<bool> CreateUser(RegisterDto dto);
+        Task<Result<bool>> CreateUser(RegisterDto dto);
+        Task<Result<string>> Login(LoginDto dto);
     }
 }

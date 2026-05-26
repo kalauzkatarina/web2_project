@@ -10,4 +10,11 @@
 	<Section Name="DbConfig">
 		<Parameter Name="UserDbConnectionString" Value="Server=localhost,1434;Database=UserDB;User Id=sa;Password=TravelApp2026!#;TrustServerCertificate=True;"/>
 	</Section>
+
+	<Section Name="JwtConfig">
+		<Parameter Name="Key" Value="OvoJEtajniKljucZaTravELPLanning824!##$%"/>
+		<Parameter Name="Issuer" Value="TravelPlanning"/>
+		<Parameter Name="Audience" Value="TravelPlanning"/>
+		<Parameter Name="ExpirationMinutes" Value="120"/>
+	</Section>
 </Settings>
