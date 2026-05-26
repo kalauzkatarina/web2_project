@@ -1,5 +1,6 @@
 ﻿using Common.DTOs.user;
 using Common.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
 
@@ -44,6 +45,55 @@ namespace Web_Api.Controllers
             }
 
             return Unauthorized(new {Message = result.ErrorMessage});
+        }
+
+        [HttpGet("all")]
+        [Authorize(Roles ="Admin")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var result = await _userService.GetAllUsers();
+
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(new { Message = result.ErrorMessage });
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            if(!Guid.TryParse(id, out Guid userId))
+            {
+                return BadRequest(new { Message = "The provided ID format is not valid. It must be a Guid." });
+            }
+            var result = await _userService.DeleteUser(userId);
+
+            if(result.IsSuccess)
+            {
+                return Ok(new { Message = $"User with ID {id} has been successfully deleted." });
+            }
+
+            return NotFound(new { Message = result.ErrorMessage });
+        }
+
+        [HttpGet("{id}")]
+        //[Authorize] //samo ulogovani vide profile
+        public async Task<IActionResult> GetUserById(string id)
+        {
+            if (!Guid.TryParse(id, out Guid userId))
+            {
+                return BadRequest(new { Message = "The provided ID format is not valid. It must be a Guid." });
+            }
+            var result = await _userService.GetUserById(userId);
+
+            if(result.IsSuccess)
+            {
+                return Ok(result.Data);
+            }
+            return NotFound(new { Message = result.ErrorMessage });
         }
     }
 }

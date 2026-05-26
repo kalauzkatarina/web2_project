@@ -43,6 +43,33 @@ namespace UserService
             _serviceProvider = services.BuildServiceProvider();
         }
 
+        public async Task<Result<bool>> DeleteUser(Guid userId)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var accountService = scope.ServiceProvider.GetRequiredService<IAccountService>();
+                return await accountService.DeleteUser(userId);
+            }
+        }
+
+        public async Task<Result<List<UserDto>>> GetAllUsers()
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var accountService = scope.ServiceProvider.GetRequiredService<IAccountService>();
+                return await accountService.GetAllUsers();
+            }
+        }
+
+        public async Task<Result<UserDto>> GetUserById(Guid userId)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var accountService = scope.ServiceProvider.GetRequiredService<IAccountService>();
+                return await accountService.GetUserById(userId);
+            }
+        }
+
         public async Task<Result<string>> Login(LoginDto loginDto)
         {
             using(var scope = _serviceProvider.CreateScope())

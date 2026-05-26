@@ -24,14 +24,16 @@ namespace UserService.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             var user = await GetByIdAsync(id);
             if(user  != null)
             {
                 _context.Users.Remove(user);    
                 await _context.SaveChangesAsync();
+                return true;
             }
+            return false;
         }
 
         public async Task<IEnumerable<User>> GetAllAsync()

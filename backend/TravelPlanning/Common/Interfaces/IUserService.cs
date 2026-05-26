@@ -13,5 +13,8 @@ namespace Common.Interfaces
     {
         Task<Result<bool>> Register(RegisterDto registerDto);
         Task<Result<string>> Login(LoginDto loginDto);
+        Task<Result<List<UserDto>>> GetAllUsers();
+        Task<Result<bool>> DeleteUser(Guid userId);
+        Task<Result<UserDto>> GetUserById(Guid userId);
     }
 }

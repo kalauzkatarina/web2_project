@@ -48,18 +48,62 @@ namespace UserService.Services
             return Result<bool>.Success(true);
         }
 
+        public async Task<Result<bool>> DeleteUser(Guid userId)
+        {
+            var success = await _userRepository.DeleteAsync(userId);
+            if (!success)
+            {
+                return Result<bool>.Failure("User not found or could not be deleted.");
+            }
+            return Result<bool>.Success(true);
+        }
+
+        public async Task<Result<List<UserDto>>> GetAllUsers()
+        {
+            var users = await _userRepository.GetAllAsync();
+
+            var userDtos = users.Select(u => new UserDto
+            {
+                Id = u.Id,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                Email = u.Email,
+                Role = u.Role.ToString(),
+            }).ToList();
+
+            return Result<List<UserDto>>.Success(userDtos);
+        }
+
+        public async Task<Result<UserDto>> GetUserById(Guid id)
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+
+            if (user == null) return Result<UserDto>.Failure("User not found.");
+
+            var dto = new UserDto
+            {
+                Id = user.Id,
+                FirstName= user.FirstName,
+                LastName= user.LastName,
+                Email = user.Email,
+                Role = user.Role.ToString(),
+            };
+
+            return Result<UserDto>.Success(dto);
+        }
+
         public async Task<Result<string>> Login(LoginDto dto)
         {
             var user = await _userRepository.GetByEmailAsync(dto.Email);
 
             if(user == null)
             {
-                return Result<string>.Failure("User with this email already exists");
+                return Result<string>.Failure("Invalid email or password.");
             }
 
             if(!_passwordService.VerifyPassword(dto.Password, user.Password))
             {
-                return Result<string>.Failure("Wrong password.");
+                return Result<string>.Failure("Invalid password.");
             }
 
             var token = _jwtService.CreateToken(user.Id, user.Email, user.Role.ToString());

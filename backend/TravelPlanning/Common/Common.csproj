@@ -139,6 +139,7 @@
   <ItemGroup>
     <Compile Include="DTOs\user\LoginDto.cs" />
     <Compile Include="DTOs\user\RegisterDto.cs" />
+    <Compile Include="DTOs\user\UserDto.cs" />
     <Compile Include="Enums\UserRole.cs" />
     <Compile Include="Interfaces\IJwtService.cs" />
     <Compile Include="Interfaces\IPasswordService.cs" />

@@ -12,5 +12,8 @@ namespace UserService.Interfaces
     {
         Task<Result<bool>> CreateUser(RegisterDto dto);
         Task<Result<string>> Login(LoginDto dto);
+        Task<Result<List<UserDto>>> GetAllUsers();
+        Task<Result<bool>> DeleteUser(Guid userId);
+        Task<Result<UserDto>> GetUserById (Guid id);
     }
 }
