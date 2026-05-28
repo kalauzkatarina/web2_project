@@ -1,0 +1,123 @@
+﻿using Common.DTOs.travelPlan;
+using Common.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TravelPlanService.Interfaces;
+using TravelPlanService.Mappers;
+using TravelPlanService.Models;
+
+namespace TravelPlanService.Services
+{
+    public class ActivityService : IActivityService
+    {
+        private readonly IActivityRepository _activityRepository;
+        private readonly IDestinationRepository _destinationRepository;
+        private readonly IPlanRepository _travelPlanRepository;
+
+        public ActivityService(IActivityRepository activityRepository, IDestinationRepository destinationRepository, IPlanRepository travelPlanRepository)
+        {
+            _activityRepository = activityRepository;
+            _destinationRepository = destinationRepository;
+            _travelPlanRepository = travelPlanRepository;
+        }
+
+        public async Task<Result<ActivityDto>> AddAsync(Guid userId, AddActivityDto dto)
+        {
+            var destination = await _destinationRepository.GetByIdAsync(dto.DestinationId);
+            if (destination == null)
+                return Result<ActivityDto>.Failure("Destination not found.");
+
+            var plan = await _travelPlanRepository.GetByIdAsync(destination.TravelPlanId);
+            if (plan == null || plan.UserId != userId)
+                return Result<ActivityDto>.Failure("You are not authorized to add activities to this plan.");
+
+            var acitvity = new Activity(
+                Guid.NewGuid(),
+                dto.DestinationId,
+                dto.Title,
+                dto.Location,
+                dto.Description,
+                dto.EstimatedCost,
+                dto.Date,
+                dto.Time,
+                dto.Status);
+
+            var created = await _activityRepository.AddAsync(acitvity);
+            return Result<ActivityDto>.Success(ActivityMapper.ToDto(created));
+        }
+
+        public async Task<Result<bool>> DeleteAsync(Guid activityId, Guid userId)
+        {
+            var activity = await _activityRepository.GetByIdAsync(activityId);
+            if (activity == null)
+                return Result<bool>.Failure("Activity not found.");
+
+            var destination = await _destinationRepository.GetByIdAsync(activity.DestinationId);
+            if(destination == null)
+                return Result<bool>.Failure("Destination not found.");
+
+            var plan = await _travelPlanRepository.GetByIdAsync(destination.TravelPlanId);
+            if (plan == null || plan.UserId != userId)
+                return Result<bool>.Failure("You are not authorized to delete this activity.");
+
+            var success = await _activityRepository.DeleteAsync(activityId);
+            return success
+                ? Result<bool>.Success(true)
+                : Result<bool>.Failure("Failed to delete activity.");
+        }
+
+        public async Task<Result<List<ActivityDto>>> GetByDateAsync(Guid planId, Guid userId, DateTime date)
+        {
+            var plan = await _travelPlanRepository.GetByIdAsync(planId);
+            if (plan == null || plan.UserId != userId)
+                return Result<List<ActivityDto>>.Failure("You are not authorized to view activities for this plan.");
+
+            var activities = await _activityRepository.GetByDateAsync(planId, date);
+            var dtos = activities.Select(a => ActivityMapper.ToDto(a)).ToList();
+            return Result<List<ActivityDto>>.Success(dtos);
+        }
+
+        public async Task<Result<List<ActivityDto>>> GetByDestinationAsync(Guid destinationId, Guid userId)
+        {
+            var destination = await _destinationRepository.GetByIdAsync(destinationId);
+            if (destination == null)
+                return Result<List<ActivityDto>>.Failure("Destination not found.");
+
+            var plan = await _travelPlanRepository.GetByIdAsync(destination.TravelPlanId);
+            if (plan == null || plan.UserId != userId)
+                return Result<List<ActivityDto>>.Failure("You are not authorized to view activities for this destination.");
+
+            var activities = await _activityRepository.GetByDestinationIdAsync(destinationId);
+            var dtos = activities.Select(a => ActivityMapper.ToDto(a)).ToList();
+            return Result<List<ActivityDto>>.Success(dtos);
+        }
+
+        public async Task<Result<bool>> UpdateAsync(Guid activityId, Guid userId, UpdateActivityDto dto)
+        {
+            var activity = await _activityRepository.GetByIdAsync(activityId);
+            if (activity == null)
+                return Result<bool>.Failure("Activity not found.");
+
+            var destination = await _destinationRepository.GetByIdAsync(activity.DestinationId);
+            var plan = await _travelPlanRepository.GetByIdAsync(destination.TravelPlanId);
+            if (plan == null || plan.UserId != userId)
+                return Result<bool>.Failure("You are not authorized to delete this activity.");
+
+            activity.Title = dto.Title;
+            activity.Location = dto.Location;
+            activity.Description = dto.Description;
+            activity.EstimatedCost = dto.EstimatedCost;
+            activity.Date = dto.Date;
+            activity.Time = dto.Time;
+            activity.Status = dto.Status;
+
+            var success = await _activityRepository.UpdateAsync(activity);
+            return success
+                ? Result<bool>.Success(true)
+                : Result<bool>.Failure("Failed to update activity.");
+        }
+    }
+}

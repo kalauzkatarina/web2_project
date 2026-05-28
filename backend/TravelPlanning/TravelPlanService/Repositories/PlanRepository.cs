@@ -10,10 +10,10 @@ using TravelPlanService.Models;
 
 namespace TravelPlanService.Repositories
 {
-    public class TravelPlanRepository : ITravelPlanRepository
+    public class PlanRepository : IPlanRepository
     {
         private readonly TravelDbContext _context;
-        public TravelPlanRepository(TravelDbContext context)
+        public PlanRepository(TravelDbContext context)
         {
             _context = context;
         }

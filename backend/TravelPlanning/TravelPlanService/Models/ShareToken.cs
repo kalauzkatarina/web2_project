@@ -10,10 +10,10 @@ namespace TravelPlanService.Models
     public class ShareToken
     {
         public Guid Id { get; set; }
-        public Guid PlanId { get; set; }
+        public Guid PlanId { get; set; } //koji plan se deli
         public string Token { get; set; }
         public AccessType AccessType { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime? ExpiresAt { get; set; }
+        public DateTime? ExpiresAt { get; set; } //ako je null to znaci nikad ne istice
     }
 }

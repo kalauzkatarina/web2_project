@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
 
-namespace Web_Api.Controllers
+namespace Web_Api.Controllers.User
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -80,7 +80,7 @@ namespace Web_Api.Controllers
         }
 
         [HttpGet("{id}")]
-        //[Authorize] //samo ulogovani vide profile
+        [Authorize] //samo ulogovani vide profile
         public async Task<IActionResult> GetUserById(string id)
         {
             if (!Guid.TryParse(id, out Guid userId))

@@ -4,6 +4,7 @@ using System.Fabric;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Services.Runtime;
+using TravelPlanService.Services;
 
 namespace TravelPlanService
 {
@@ -24,7 +25,7 @@ namespace TravelPlanService
                 ServiceRuntime.RegisterServiceAsync("TravelPlanServiceType",
                     context => new TravelPlanService(context)).GetAwaiter().GetResult();
 
-                ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(TravelPlanService).Name);
+                ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(PlanService).Name);
 
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);

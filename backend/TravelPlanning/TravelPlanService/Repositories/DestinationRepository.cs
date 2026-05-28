@@ -43,12 +43,12 @@ namespace TravelPlanService.Repositories
                 .FirstOrDefaultAsync(d => d.Id == destinationId);
         }
 
-        public async Task<List<Destination>?> GetByPlanIdAsync(Guid planId)
+        public async Task<List<Destination>> GetByPlanIdAsync(Guid planId)
         {
             return await _context.Destinations
                 .Where(d => d.TravelPlanId == planId)
                 .Include(d => d.Activities) //ucitaj i sve aktivnosti vezane za tu destinaciju
-                .ToListAsync();
+                .ToListAsync(); //nikad ne vraca null, uvek praznu listu
         }
 
         public async Task<bool> UpdateAsync(Destination destination)

@@ -7,7 +7,7 @@ using TravelPlanService.Models;
 
 namespace TravelPlanService.Interfaces
 {
-    public interface ITravelPlanRepository
+    public interface IPlanRepository
     {
         Task<TravelPlan> CreateAsync(TravelPlan travelPlan);
         Task<List<TravelPlan>> GetAllByUserIdAsync(Guid userId);

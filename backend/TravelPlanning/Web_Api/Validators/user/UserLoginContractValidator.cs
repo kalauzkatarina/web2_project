@@ -1,7 +1,7 @@
 ﻿using Common.DTOs.user;
 using FluentValidation;
 
-namespace Web_Api.Validators
+namespace Web_Api.Validators.user
 {
     public class UserLoginContractValidator : AbstractValidator<LoginDto>
     {
