@@ -1,0 +1,5 @@
+{
+  "Values": {
+    "FinanceDbConnectionString": "Server=localhost,1434;Database=FinanceDB;User Id=sa;Password=TravelApp2026!#;TrustServerCertificate=True"
+  }
+}

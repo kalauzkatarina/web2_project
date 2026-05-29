@@ -159,6 +159,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTOs\finance\AddExpenseDto.cs" />
+    <Compile Include="DTOs\finance\BudgetSummaryDto.cs" />
+    <Compile Include="DTOs\finance\ExpenseDto.cs" />
+    <Compile Include="DTOs\finance\UpdateExpenseDto.cs" />
     <Compile Include="DTOs\travelPlan\ActivityDto.cs" />
     <Compile Include="DTOs\travelPlan\AddActivityDto.cs" />
     <Compile Include="DTOs\travelPlan\AddDestinationDto.cs" />
@@ -175,6 +179,7 @@
     <Compile Include="DTOs\user\UserDto.cs" />
     <Compile Include="Enums\AccessType.cs" />
     <Compile Include="Enums\ActivityStatus.cs" />
+    <Compile Include="Enums\ExpenseCategory.cs" />
     <Compile Include="Enums\UserRole.cs" />
     <Compile Include="Helpers\ClaimsPrincipalHelper.cs" />
     <Compile Include="Interfaces\IJwtService.cs" />
