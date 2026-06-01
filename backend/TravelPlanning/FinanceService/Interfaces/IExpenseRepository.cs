@@ -12,6 +12,7 @@ namespace FinanceService.Interfaces
         Task<Expense> AddAsync(Expense expense);
         Task<Expense?> GetByIdAsync(Guid expenseId);
         Task<List<Expense>> GetByPlanIdAsync(Guid planId);
+        Task<List<Expense>> GetAllAsync();
         Task<bool> UpdateAsync(Expense expense);
         Task<bool> DeleteAsync(Guid expenseId);
         Task<double> GetTotalByPlanIdAsync(Guid planId);

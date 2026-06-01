@@ -22,7 +22,8 @@ namespace TravelPlanService.Mappers
                 EstimatedCost = activity.EstimatedCost,
                 Date = activity.Date,
                 Time = activity.Time,
-                Status = activity.Status
+                Status = activity.Status,
+                Category = activity.Category
             };
         }
     }

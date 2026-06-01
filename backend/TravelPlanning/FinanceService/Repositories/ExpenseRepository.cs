@@ -48,6 +48,11 @@ namespace FinanceService.Repositories
             return result > 0;
         }
 
+        public async Task<List<Expense>> GetAllAsync()
+        {
+            return await _context.Expenses.ToListAsync();
+        }
+
         public async Task<Expense?> GetByIdAsync(Guid expenseId)
         {
             return await _context.Expenses

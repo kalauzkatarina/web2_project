@@ -13,7 +13,7 @@ namespace TravelPlanService.Models
         {
         }
 
-        public Activity(Guid id, Guid destinationId, string title, string location, string description, double estimatedCost, DateTime date, string time, ActivityStatus status) : this()
+        public Activity(Guid id, Guid destinationId, string title, string location, string description, double estimatedCost, DateTime date, string time, ActivityStatus status, ExpenseCategory category) : this()
         {
             Id = id;
             DestinationId = destinationId;
@@ -24,6 +24,7 @@ namespace TravelPlanService.Models
             Date = date;
             Time = time;
             Status = status;
+            Category = category;
         }
 
         public Guid Id { get; set; }
@@ -35,5 +36,6 @@ namespace TravelPlanService.Models
         public DateTime Date { get; set; } //za calendar view 
         public string Time { get; set; } //za calendar view
         public ActivityStatus Status { get; set; }
+        public ExpenseCategory Category { get; set; }
     }
 }

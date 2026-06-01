@@ -39,7 +39,8 @@ namespace TravelPlanService.Repositories
         {
             return await _context.TravelPlans
                 .Where(tp => tp.UserId == userId)
-                .Include(tp => tp.Destinations)
+                .Include(tp => tp.Destinations)          
+                    .ThenInclude(d => d.Activities)
                 .ToListAsync();
         }
 

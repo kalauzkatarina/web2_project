@@ -21,7 +21,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.8" />
-    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="8.4.205-rc" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services.Remoting" Version="8.3.475" />
   </ItemGroup>
 
   <ItemGroup>

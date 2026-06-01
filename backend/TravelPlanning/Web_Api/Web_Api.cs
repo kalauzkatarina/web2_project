@@ -1,3 +1,14 @@
+using Common.Interfaces;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.ServiceFabric.Data;
+using Microsoft.ServiceFabric.Services.Client;
+using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
+using Microsoft.ServiceFabric.Services.Communication.Runtime;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
+using Microsoft.ServiceFabric.Services.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Fabric;
@@ -5,16 +16,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
-using Microsoft.ServiceFabric.Services.Communication.Runtime;
-using Microsoft.ServiceFabric.Services.Runtime;
-using Microsoft.ServiceFabric.Data;
-using FluentValidation.AspNetCore;
-using FluentValidation;
-using Web_Api.Validators.user;
 using Web_Api.Setup;
+using Web_Api.Validators.user;
 
 namespace Web_Api
 {
@@ -43,6 +46,14 @@ namespace Web_Api
                         var builder = WebApplication.CreateBuilder();
 
                         builder.Services.AddSingleton<StatelessServiceContext>(serviceContext);
+
+                        builder.Services.AddScoped<IFinanceService>(prop =>
+                            ServiceProxy.Create<IFinanceService>(
+                                new Uri("fabric:/TravelPlanning/FinanceService"),
+                                new ServicePartitionKey(0)
+                            )
+                        );
+
                         builder.WebHost
                                     .UseKestrel()
                                     .UseContentRoot(Directory.GetCurrentDirectory())

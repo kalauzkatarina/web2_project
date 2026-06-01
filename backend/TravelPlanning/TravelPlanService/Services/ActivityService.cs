@@ -1,5 +1,10 @@
 ﻿using Common.DTOs.travelPlan;
+using Common.Enums;
+using Common.Interfaces;
 using Common.Models;
+using Microsoft.Extensions.Logging;
+using Microsoft.ServiceFabric.Services.Client;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +29,31 @@ namespace TravelPlanService.Services
             _travelPlanRepository = travelPlanRepository;
         }
 
+        #region HELPER methods
+
+        private IFinanceService GetFinanceProxy()
+        {
+            return ServiceProxy.Create<IFinanceService>(
+                new Uri("fabric:/TravelPlanning/FinanceService"),
+                new ServicePartitionKey(0));
+        }
+
+        private async Task SyncWithFinance(Guid userId, Guid planId, double delta, string title, string operation, ExpenseCategory category)
+        {
+            if (delta == 0) return;
+
+            try
+            {
+                var proxy = GetFinanceProxy();
+                await proxy.SyncActivityCostAsync(userId, planId, delta, title, operation, category);
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        #endregion
+
         public async Task<Result<ActivityDto>> AddAsync(Guid userId, AddActivityDto dto)
         {
             var destination = await _destinationRepository.GetByIdAsync(dto.DestinationId);
@@ -43,9 +73,13 @@ namespace TravelPlanService.Services
                 dto.EstimatedCost,
                 dto.Date,
                 dto.Time,
-                dto.Status);
+                dto.Status,
+                dto.Category);
 
             var created = await _activityRepository.AddAsync(acitvity);
+
+            await SyncWithFinance(userId,plan.Id, created.EstimatedCost, $"Activity: {created.Title}", "ADD", created.Category);
+
             return Result<ActivityDto>.Success(ActivityMapper.ToDto(created));
         }
 
@@ -64,6 +98,13 @@ namespace TravelPlanService.Services
                 return Result<bool>.Failure("You are not authorized to delete this activity.");
 
             var success = await _activityRepository.DeleteAsync(activityId);
+
+            if (success)
+            {
+                // We send negative cost to subtract it from the total budget
+                await SyncWithFinance(userId, plan.Id, -activity.EstimatedCost, $"Delete: {activity.Title}", "DELETE", activity.Category);
+            }
+
             return success
                 ? Result<bool>.Success(true)
                 : Result<bool>.Failure("Failed to delete activity.");
@@ -106,6 +147,8 @@ namespace TravelPlanService.Services
             if (plan == null || plan.UserId != userId)
                 return Result<bool>.Failure("You are not authorized to delete this activity.");
 
+            double oldCost = activity.EstimatedCost;
+
             activity.Title = dto.Title;
             activity.Location = dto.Location;
             activity.Description = dto.Description;
@@ -113,8 +156,16 @@ namespace TravelPlanService.Services
             activity.Date = dto.Date;
             activity.Time = dto.Time;
             activity.Status = dto.Status;
+            activity.Category = dto.Category;
 
             var success = await _activityRepository.UpdateAsync(activity);
+
+            if (success)
+            {
+                double amountDelta = activity.EstimatedCost - oldCost;
+                await SyncWithFinance(userId ,plan.Id, activity.EstimatedCost, $"Update: {activity.Title}", "UPDATE", activity.Category);
+            }
+
             return success
                 ? Result<bool>.Success(true)
                 : Result<bool>.Failure("Failed to update activity.");

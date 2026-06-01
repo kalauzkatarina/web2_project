@@ -17,5 +17,6 @@ namespace Common.DTOs.travelPlan
         public DateTime Date { get; set; }
         public string Time { get; set; }
         public ActivityStatus Status { get; set; }
+        public ExpenseCategory Category { get; set; }
     }
 }
