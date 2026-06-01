@@ -98,12 +98,12 @@ namespace FinanceService.Helpers
             using var scope = _serviceProvider.CreateScope();
             var repo = scope.ServiceProvider.GetRequiredService<IExpenseRepository>();
 
-            // 1. Provera da li je sistemski Update (SyncActivityCostAsync)
+            //Provera da li je sistemski Update (SyncActivityCostAsync)
             if (payload.Contains("Automatic activity synchronization (UPDATE)"))
             {
                 var dto = JsonSerializer.Deserialize<AddExpenseDto>(payload);
 
-                // Ista logika kao kod brisanja - nađi trošak po imenu
+                //nađi trošak po imenu
                 string activityName = dto.Title.Replace("Update: ", "").Replace("Activity: ", "");
                 var allExpenses = await repo.GetByPlanIdAsync(dto.PlanId);
                 var toUpdate = allExpenses.FirstOrDefault(e => e.Title.Contains(activityName));
@@ -117,7 +117,7 @@ namespace FinanceService.Helpers
                 return;
             }
 
-            // 2. Ručni Update (Standardni tok)
+            //Ručni Update (Standardni tok)
             try
             {
                 var updatePayload = JsonSerializer.Deserialize<UpdateQueuePayload>(payload);
@@ -140,38 +140,28 @@ namespace FinanceService.Helpers
             }
         }
 
-        //private async Task HandleDeleteAsync(string payload)
-        //{
-        //    var expenseId = JsonSerializer.Deserialize<Guid>(payload);
-        //    using var scope = _serviceProvider.CreateScope();
-        //    var repo = scope.ServiceProvider.GetRequiredService<IExpenseRepository>();
-        //    await repo.DeleteAsync(expenseId);
-        //    _logger.LogInformation($"Expense deleted from SQL: {expenseId}");
-        //}
-
         private async Task HandleDeleteAsync(string payload)
         {
             using var scope = _serviceProvider.CreateScope();
             var repo = scope.ServiceProvider.GetRequiredService<IExpenseRepository>();
 
-            // 1. Probaj Guid (ostaje isto)
             if (Guid.TryParse(payload.Replace("\"", ""), out Guid expenseId))
             {
                 await repo.DeleteAsync(expenseId);
                 return;
             }
 
-            // 2. Automatsko brisanje (OVDE JE PROMENA)
+            //Automatsko brisanje
             try
             {
                 var dto = JsonSerializer.Deserialize<AddExpenseDto>(payload);
 
-                // Uzmi samo ime aktivnosti (skini "Delete: " prefix)
+                //Uzmi samo ime aktivnosti (skini "Delete: " prefix)
                 string activityName = dto.Title.Replace("Delete: ", "").Replace("Activity: ", "");
 
                 var allExpenses = await repo.GetByPlanIdAsync(dto.PlanId);
 
-                // Tražimo trošak koji sadrži ime te aktivnosti
+                //Tražimo trošak koji sadrži ime te aktivnosti
                 var toDelete = allExpenses.FirstOrDefault(e => e.Title.Contains(activityName));
 
                 if (toDelete != null)

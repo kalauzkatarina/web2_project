@@ -38,14 +38,14 @@ namespace TravelPlanService.Services
                 new ServicePartitionKey(0));
         }
 
-        private async Task SyncWithFinance(Guid userId, Guid planId, double delta, string title, string operation, ExpenseCategory category)
+        private async Task SyncWithFinance(Guid userId, Guid planId, double amount, string title, string operation, ExpenseCategory category)
         {
-            if (delta == 0) return;
+            if (amount == 0) return;
 
             try
             {
                 var proxy = GetFinanceProxy();
-                await proxy.SyncActivityCostAsync(userId, planId, delta, title, operation, category);
+                await proxy.SyncActivityCostAsync(userId, planId, amount, title, operation, category);
             }
             catch (Exception ex)
             {
