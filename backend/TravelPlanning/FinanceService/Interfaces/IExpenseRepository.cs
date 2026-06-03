@@ -17,5 +17,6 @@ namespace FinanceService.Interfaces
         Task<bool> DeleteAsync(Guid expenseId);
         Task<double> GetTotalByPlanIdAsync(Guid planId);
         Task<bool> DeleteByPlanIdAsync(Guid planId); //kaskadno brisanje
+        Task<Expense?> GetByActivityIdAsync(Guid activityId);
     }
 }

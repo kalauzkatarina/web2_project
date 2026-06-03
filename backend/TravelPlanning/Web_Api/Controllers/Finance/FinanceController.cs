@@ -10,7 +10,7 @@ namespace Web_Api.Controllers.Finance
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[Authorize]
+    [Authorize]
     public class FinanceController : ControllerBase
     {
         private readonly IFinanceService _financeService;

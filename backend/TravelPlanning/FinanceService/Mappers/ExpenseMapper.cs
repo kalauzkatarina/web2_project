@@ -22,6 +22,7 @@ namespace FinanceService.Mappers
                 Date = expense.Date,
                 Description = expense.Description,
                 CreatedAt = expense.CreatedAt,
+                ActivityId = expense.ActivityId,
             };
         }
     }

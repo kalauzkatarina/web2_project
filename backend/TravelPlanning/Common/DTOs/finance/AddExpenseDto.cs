@@ -15,5 +15,6 @@ namespace Common.DTOs.finance
         public ExpenseCategory Category { get; set; }
         public DateTime Date { get; set; }
         public string Description { get; set; }
+        public Guid? ActivityId { get; set; }
     }
 }

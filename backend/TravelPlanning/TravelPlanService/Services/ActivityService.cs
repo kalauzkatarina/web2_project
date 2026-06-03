@@ -38,17 +38,18 @@ namespace TravelPlanService.Services
                 new ServicePartitionKey(0));
         }
 
-        private async Task SyncWithFinance(Guid userId, Guid planId, double amount, string title, string operation, ExpenseCategory category)
+        private async Task SyncWithFinance(Guid userId, Guid planId, Guid activityId, double amount, string title, string operation, ExpenseCategory category)
         {
             if (amount == 0) return;
 
             try
             {
                 var proxy = GetFinanceProxy();
-                await proxy.SyncActivityCostAsync(userId, planId, amount, title, operation, category);
+                await proxy.SyncActivityCostAsync(userId, planId, activityId, amount, title, operation, category);
             }
             catch (Exception ex)
             {
+                //ne blokiramo tok radnje
             }
         }
 
@@ -78,7 +79,7 @@ namespace TravelPlanService.Services
 
             var created = await _activityRepository.AddAsync(acitvity);
 
-            await SyncWithFinance(userId,plan.Id, created.EstimatedCost, $"Activity: {created.Title}", "ADD", created.Category);
+            await SyncWithFinance(userId,plan.Id, created.Id, created.EstimatedCost, $"Activity: {created.Title}", "ADD", created.Category);
 
             return Result<ActivityDto>.Success(ActivityMapper.ToDto(created));
         }
@@ -102,7 +103,7 @@ namespace TravelPlanService.Services
             if (success)
             {
                 // We send negative cost to subtract it from the total budget
-                await SyncWithFinance(userId, plan.Id, -activity.EstimatedCost, $"Delete: {activity.Title}", "DELETE", activity.Category);
+                await SyncWithFinance(userId, plan.Id, activity.Id, -activity.EstimatedCost, $"Delete: {activity.Title}", "DELETE", activity.Category);
             }
 
             return success
@@ -163,7 +164,7 @@ namespace TravelPlanService.Services
             if (success)
             {
                 double amountDelta = activity.EstimatedCost - oldCost;
-                await SyncWithFinance(userId ,plan.Id, activity.EstimatedCost, $"Update: {activity.Title}", "UPDATE", activity.Category);
+                await SyncWithFinance(userId ,plan.Id, activity.Id, activity.EstimatedCost, $"Update: {activity.Title}", "UPDATE", activity.Category);
             }
 
             return success

@@ -17,5 +17,6 @@ namespace Common.DTOs.finance
         public DateTime Date { get; set; }
         public string Description { get; set; }
         public DateTime CreatedAt { get; set; }
+        public Guid? ActivityId { get; set; }
     }
 }

@@ -237,64 +237,55 @@ namespace FinanceService
             }
         }
 
-        public async Task<Result<bool>> SyncActivityCostAsync(Guid userId, Guid planId, double newTotalAmount, string title, string operation, ExpenseCategory category)
+        public async Task<Result<bool>> SyncActivityCostAsync(Guid userId, Guid planId, Guid activityId, double newTotalAmount, string title, string operation, ExpenseCategory category)
         {
-            double oldAmount = 0;
-            string cleanTitle = title.Replace("Update: ", "").Replace("Activity: ", "").Replace("Delete: ", "");
-
+            _logger.LogInformation("SYNC POZVAN ZA ACTIVITY {0}", activityId);
             using (var scope = _serviceProvider.CreateScope())
             {
                 var repo = scope.ServiceProvider.GetRequiredService<IExpenseRepository>();
-                var allExpenses = await repo.GetByPlanIdAsync(planId);
-                var existing = allExpenses.FirstOrDefault(e => e.Title.Contains(cleanTitle));
+                var existing = await repo.GetByActivityIdAsync(activityId);
 
                 if (existing != null)
                 {
-                    oldAmount = existing.Amount;
+                    existing.Title = title;
+                    existing.Category = category;
+                    await repo.UpdateAsync(existing);
                 }
-            }
 
-            //Izračunaj stvarnu razliku (delta) za keš
-            double delta = (operation == "ADD") ? newTotalAmount : (newTotalAmount - oldAmount);
+                double oldAmount = existing?.Amount ?? 0;
+                double delta = (operation == "ADD") ? newTotalAmount : (newTotalAmount - oldAmount);
 
-            // Ako nema promene, ne radi ništa
-            if (Math.Abs(delta) < 0.01) return Result<bool>.Success(true);
+                if (Math.Abs(delta) < 0.01 && operation != "ADD") return Result<bool>.Success(true);
 
-            using (var tx = StateManager.CreateTransaction())
-            {
-                //Ažuriranje keš sa izračunatom deltom
-                await _budgetCache.AddOrUpdateAsync(tx, planId, delta, (id, old) => old + delta);
-
-                //Pripremi operaciju za SQL (šaljemo novu vrednost - 80, a ne razliku)
-                ExpenseOperationType queueOperation = operation switch
+                var dto = new AddExpenseDto
                 {
-                    "DELETE" => ExpenseOperationType.Delete,
-                    "UPDATE" => ExpenseOperationType.Update,
-                    _ => ExpenseOperationType.Add
+                    PlanId = planId,
+                    Title = title,
+                    Amount = newTotalAmount,
+                    Category = category,
+                    ActivityId = activityId,
+                    Date = DateTime.UtcNow
                 };
 
-                await _sqlQueue.EnqueueAsync(tx, new ExpenseQueueItem
+                using (var tx = StateManager.CreateTransaction())
                 {
-                    OperationType = queueOperation,
-                    Payload = JsonSerializer.Serialize(new AddExpenseDto
+                    //Ažuriranje keš sa izračunatom deltom
+                    await _budgetCache.AddOrUpdateAsync(tx, planId, delta, (id, old) => old + delta);
+
+                    await _sqlQueue.EnqueueAsync(tx, new ExpenseQueueItem
                     {
-                        PlanId = planId,
-                        Title = title, // Prosledi naslov kao "Update: Ime"
-                        Amount = newTotalAmount, // Šaljemo PUN IZNOS (npr 80), a ne razliku!
-                        Category = category,
-                        Date = DateTime.Now,
-                        Description = $"Automatic activity synchronization ({operation})"
-                    }),
-                    UserId = userId
-                });
-
-                await tx.CommitAsync();
+                        OperationType = operation switch 
+                        { 
+                            "DELETE" => ExpenseOperationType.Delete, 
+                            "UPDATE" => ExpenseOperationType.Update, 
+                            _ => ExpenseOperationType.Add },
+                            Payload = JsonSerializer.Serialize(dto),
+                            UserId = userId
+                    });
+                    await tx.CommitAsync();
+                    return Result<bool>.Success(true);
+                }
             }
-
-            _logger.LogInformation("Cost synchronized for Plan {PlanId}. Op: {Operation}, NewTotal: {NewTotal}, Delta: {Delta}",
-                                   planId, operation, newTotalAmount, delta);
-
-            return Result<bool>.Success(true);
         }
 
         /// <summary>

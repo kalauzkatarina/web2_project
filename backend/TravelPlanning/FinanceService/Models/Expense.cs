@@ -11,7 +11,7 @@ namespace FinanceService.Models
     {
         public Expense() { }
 
-        public Expense(Guid id, Guid planId, string title, double amount, ExpenseCategory category, DateTime date, string description)
+        public Expense(Guid id, Guid planId, string title, double amount, ExpenseCategory category, DateTime date, string description, Guid? activityId = null)
         {
             Id = id;
             PlanId = planId;
@@ -21,10 +21,12 @@ namespace FinanceService.Models
             Date = date;
             Description = description;
             CreatedAt = DateTime.Now;
+            ActivityId = activityId;
         }
 
         public Guid Id { get; set; }
         public Guid PlanId { get; set; }
+        public Guid? ActivityId { get; set; }
         public string Title { get; set; }
         public double Amount { get; set; }
         public ExpenseCategory Category { get; set; }

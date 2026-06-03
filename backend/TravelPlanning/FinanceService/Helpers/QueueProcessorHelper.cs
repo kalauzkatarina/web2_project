@@ -50,16 +50,14 @@ namespace FinanceService.Helpers
                         switch (command.OperationType)
                         {
                             case ExpenseOperationType.Add:
-                                await HandleAddAsync(command.Payload);
-                                var data = JsonSerializer.Deserialize<AddExpenseDto>(command.Payload);
-                                await _cacheHelper.RefreshAsync(data.PlanId);
+                                await HandleAddAsync(command.Payload, command.UserId);
                                 break;
                             case ExpenseOperationType.Update:
-                                await HandleUpdateAsync(command.Payload);
+                                await HandleUpdateAsync(command.Payload, command.UserId);
                                 break;
 
                             case ExpenseOperationType.Delete:
-                                await HandleDeleteAsync(command.Payload);
+                                await HandleDeleteAsync(command.Payload, command.UserId);
                                 break;
                         }
 
@@ -73,110 +71,106 @@ namespace FinanceService.Helpers
             }
         }
 
-        private async Task HandleAddAsync(string payload)
+        private async Task HandleAddAsync(string payload, Guid userId)
         {
-            var addDto = JsonSerializer.Deserialize<AddExpenseDto>(payload);
+
             using var scope = _serviceProvider.CreateScope();
-            var repo = scope.ServiceProvider.GetRequiredService<IExpenseRepository>();
+            var expenseService = scope.ServiceProvider.GetRequiredService<IExpenseService>();
 
-            var expense = new Expense(
-                Guid.NewGuid(),
-                addDto.PlanId,
-                addDto.Title,
-                addDto.Amount,
-                addDto.Category,
-                addDto.Date,
-                addDto.Description);
-
-            _logger.LogInformation("Pokušavam SQL upis za plan: {0}", expense.PlanId);
-            await repo.AddAsync(expense);
-            _logger.LogInformation("SQL upis završen bez greške.");
-        }
-
-        private async Task HandleUpdateAsync(string payload)
-        {
-            using var scope = _serviceProvider.CreateScope();
-            var repo = scope.ServiceProvider.GetRequiredService<IExpenseRepository>();
-
-            //Provera da li je sistemski Update (SyncActivityCostAsync)
-            if (payload.Contains("Automatic activity synchronization (UPDATE)"))
-            {
-                var dto = JsonSerializer.Deserialize<AddExpenseDto>(payload);
-
-                //nađi trošak po imenu
-                string activityName = dto.Title.Replace("Update: ", "").Replace("Activity: ", "");
-                var allExpenses = await repo.GetByPlanIdAsync(dto.PlanId);
-                var toUpdate = allExpenses.FirstOrDefault(e => e.Title.Contains(activityName));
-
-                if (toUpdate != null)
-                {
-                    toUpdate.Amount = dto.Amount; // Ažuriraj iznos
-                    await repo.UpdateAsync(toUpdate);
-                    _logger.LogInformation($"SQL: Automatski ažuriran trošak '{toUpdate.Title}'");
-                }
-                return;
-            }
-
-            //Ručni Update (Standardni tok)
-            try
-            {
-                var updatePayload = JsonSerializer.Deserialize<UpdateQueuePayload>(payload);
-                var expense = await repo.GetByIdAsync(updatePayload.ExpenseId);
-
-                if (expense != null)
-                {
-                    expense.Title = updatePayload.Dto.Title;
-                    expense.Amount = updatePayload.Dto.Amount;
-                    expense.Category = updatePayload.Dto.Category;
-                    expense.Date = updatePayload.Dto.Date;
-                    expense.Description = updatePayload.Dto.Description;
-                    await repo.UpdateAsync(expense);
-                    _logger.LogInformation($"SQL: Ručno ažuriran trošak: {updatePayload.ExpenseId}");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Greška pri obradi ručnog update-a.");
-            }
-        }
-
-        private async Task HandleDeleteAsync(string payload)
-        {
-            using var scope = _serviceProvider.CreateScope();
-            var repo = scope.ServiceProvider.GetRequiredService<IExpenseRepository>();
-
-            if (Guid.TryParse(payload.Replace("\"", ""), out Guid expenseId))
-            {
-                await repo.DeleteAsync(expenseId);
-                return;
-            }
-
-            //Automatsko brisanje
+            // Svi šalju AddExpenseDto, nema potrebe za ručnim parsiranjem property-a
             try
             {
                 var dto = JsonSerializer.Deserialize<AddExpenseDto>(payload);
-
-                //Uzmi samo ime aktivnosti (skini "Delete: " prefix)
-                string activityName = dto.Title.Replace("Delete: ", "").Replace("Activity: ", "");
-
-                var allExpenses = await repo.GetByPlanIdAsync(dto.PlanId);
-
-                //Tražimo trošak koji sadrži ime te aktivnosti
-                var toDelete = allExpenses.FirstOrDefault(e => e.Title.Contains(activityName));
-
-                if (toDelete != null)
+                if (dto.ActivityId.HasValue)
                 {
-                    await repo.DeleteAsync(toDelete.Id);
-                    _logger.LogInformation($"SQL: Uspešno obrisan trošak '{toDelete.Title}' za aktivnost '{activityName}'");
+                    // Ovo je sistemski poziv
+                    await expenseService.SyncActivityAddAsync(dto.ActivityId.Value, dto.PlanId, dto.Amount, dto.Title, dto.Category);
                 }
                 else
                 {
-                    _logger.LogWarning($"SQL: Nije pronađen trošak koji sadrži '{activityName}' u planu {dto.PlanId}");
+                    // Ovo je ručni unos
+                    await expenseService.AddAsync(dto, userId);
+                    await _cacheHelper.RefreshAsync(dto.PlanId);
+                }
+
+            }
+            catch (JsonException ex)
+            {
+                _logger.LogError("JSON DESERIJALIZACIJA PUKLA ZA PAYLOAD: {0}. Greška: {1}", payload, ex.Message);
+            }
+        }
+
+        private async Task HandleUpdateAsync(string payload, Guid userId)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var service = scope.ServiceProvider.GetRequiredService<IExpenseService>();
+
+            // Provera da li je sistemski Update
+            var json = JsonDocument.Parse(payload).RootElement;
+
+            // Ako sadrži property "activityId", znači da je sistemski Update
+            if (json.TryGetProperty("ActivityId", out var activityIdProp))
+            {
+                Guid activityId = Guid.Parse(activityIdProp.ToString());
+                double amount = json.GetProperty("Amount").GetDouble();
+                string title = json.GetProperty("Title").GetString();
+                var category = (ExpenseCategory)json.GetProperty("Category").GetInt32();
+
+                await service.SyncActivityUpdateAsync(activityId, amount, title, category);
+                _logger.LogInformation("SQL: Automatski ažuriran trošak za ActivityId: {0}", activityId);
+                return;
+            }
+
+            // Ručni Update
+            var updatePayload = JsonSerializer.Deserialize<UpdateQueuePayload>(payload);
+            var result = await service.UpdateAsync(updatePayload.ExpenseId, userId, updatePayload.Dto);
+
+            if (!result.IsSuccess) _logger.LogError("Greška pri update-u: {0}", result.ErrorMessage);
+        }
+
+        private async Task HandleDeleteAsync(string payload, Guid userId)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var service = scope.ServiceProvider.GetRequiredService<IExpenseService>();
+
+            var cleanPayload = payload.Replace("\"", "");
+
+            if (Guid.TryParse(cleanPayload, out Guid expenseId))
+            {
+                var result = await service.DeleteAsync(expenseId, userId);
+
+                if (result.IsSuccess)
+                    _logger.LogInformation("SQL: Ručno obrisan trošak {0}", expenseId);
+
+                return;
+            }
+
+            try
+            {
+                var json = JsonDocument.Parse(payload).RootElement;
+
+                if (json.TryGetProperty("ActivityId", out var activityIdProp))
+                {
+                    //Automatska sinhronizacija
+                    Guid activityId = Guid.Parse(activityIdProp.ToString());
+                    var expense = await service.GetByActivityIdAsync(activityId);
+
+                    var result = await service.SyncActivityDeleteAsync(activityId);
+
+                    if (result.IsSuccess && expense != null)
+                    {
+                        await _cacheHelper.RefreshAsync(expense.PlanId);
+                        _logger.LogInformation("SQL: Automatski obrisan trosak za ActivityId: {0} i ozvezen kes za Plan {1}", activityId, expense.PlanId);
+                    }
+                    else
+                        _logger.LogError("Greška pri automatskom brisanju: {0}", result.ErrorMessage);
+
+                    return;
                 }
             }
-            catch (Exception ex)
+            catch (JsonException)
             {
-                _logger.LogError(ex, "Greška pri parsiranju payload-a za brisanje.");
+                // Ako parsiranje JSON-a ne uspe, znači da je payload običan Guid (ručno brisanje)
             }
         }
     }

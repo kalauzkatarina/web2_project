@@ -53,6 +53,11 @@ namespace FinanceService.Repositories
             return await _context.Expenses.ToListAsync();
         }
 
+        public async Task<Expense?> GetByActivityIdAsync(Guid activityId)
+        {
+            return await _context.Expenses.FirstOrDefaultAsync(e => e.ActivityId == activityId);
+        }
+
         public async Task<Expense?> GetByIdAsync(Guid expenseId)
         {
             return await _context.Expenses

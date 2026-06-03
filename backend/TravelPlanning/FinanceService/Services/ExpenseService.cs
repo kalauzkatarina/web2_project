@@ -1,4 +1,5 @@
 ﻿using Common.DTOs.finance;
+using Common.Enums;
 using Common.Models;
 using FinanceService.Interfaces;
 using FinanceService.Mappers;
@@ -65,6 +66,14 @@ namespace FinanceService.Services
             return Result<BudgetSummaryDto>.Success(summary);
         }
 
+        public async Task<ExpenseDto> GetByActivityIdAsync(Guid activityId)
+        {
+            var expense = await _expenseRepository.GetByActivityIdAsync(activityId);
+            if (expense == null) return null;
+
+            return ExpenseMapper.ToDto(expense);
+        }
+
         public async Task<Result<ExpenseDto>> GetByIdAsync(Guid expenseId, Guid userId)
         {
             var expense = await _expenseRepository.GetByIdAsync(expenseId);
@@ -79,6 +88,47 @@ namespace FinanceService.Services
             var expenses = await _expenseRepository.GetByPlanIdAsync(planId);
             var dtos = expenses.Select(e => ExpenseMapper.ToDto(e)).ToList();
             return Result<List<ExpenseDto>>.Success(dtos);
+        }
+
+        public async Task<Result<bool>> SyncActivityDeleteAsync(Guid activityId)
+        {
+            var expense = await _expenseRepository.GetByActivityIdAsync(activityId);
+
+            if (expense == null) return Result<bool>.Failure("Expense not found for activity delete.");
+
+            await _expenseRepository.DeleteAsync(expense.Id);
+            return Result<bool>.Success(true);
+        }
+
+        public async Task<Result<bool>> SyncActivityUpdateAsync(Guid activityId, double newAmount, string newTitle, ExpenseCategory category)
+        {
+            var expense = await _expenseRepository.GetByActivityIdAsync(activityId);
+
+            if (expense == null) return Result<bool>.Failure("Expense not found for activity update.");
+
+            expense.Amount = newAmount;
+            expense.Title = newTitle;
+            expense.Category = category;
+
+            await _expenseRepository.UpdateAsync(expense);
+            return Result<bool>.Success(true);
+        }
+
+        public async Task SyncActivityAddAsync(Guid activityId, Guid planId, double amount, string title, ExpenseCategory category)
+        {
+            // Ovde ide tvoja standardna logika za upis u SQL bazu
+            var expense = new Expense
+            {
+                ActivityId = activityId,
+                PlanId = planId,
+                Amount = amount,
+                Title = title,
+                Category = category,
+                Date = DateTime.Now,
+                Description = !string.IsNullOrEmpty(title) ? $"Automatski dodato za: {title}" : "Sistemski trošak",
+                CreatedAt = DateTime.Now
+            };
+            await _expenseRepository.AddAsync(expense);
         }
 
         public async Task<Result<bool>> UpdateAsync(Guid expenseId, Guid userId, UpdateExpenseDto dto)
