@@ -36,6 +36,7 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ChecklistService\ChecklistService.csproj" />
     <ProjectReference Include="..\FinanceService\FinanceService.csproj" />
     <ProjectReference Include="..\TravelPlanService\TravelPlanService.csproj" />
     <ProjectReference Include="..\UserService\UserService.csproj" />

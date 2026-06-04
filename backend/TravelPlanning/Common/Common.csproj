@@ -159,6 +159,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTOs\checklist\AddChecklistItemDto.cs" />
+    <Compile Include="DTOs\checklist\ChecklistItemDto.cs" />
+    <Compile Include="DTOs\checklist\UpdateChecklistItemDto.cs" />
     <Compile Include="DTOs\finance\AddExpenseDto.cs" />
     <Compile Include="DTOs\finance\BudgetSummaryDto.cs" />
     <Compile Include="DTOs\finance\ExpenseDto.cs" />

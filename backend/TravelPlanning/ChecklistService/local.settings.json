@@ -1,0 +1,5 @@
+{
+  "Values": {
+    "ChecklistDbConnectionString": "Server=localhost,1434;Database=ChecklistDB;User Id=sa;Password=TravelApp2026!#;TrustServerCertificate=True"
+  }
+}
