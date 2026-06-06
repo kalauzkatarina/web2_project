@@ -47,13 +47,6 @@ namespace Web_Api
 
                         builder.Services.AddSingleton<StatelessServiceContext>(serviceContext);
 
-                        builder.Services.AddScoped<IFinanceService>(prop =>
-                            ServiceProxy.Create<IFinanceService>(
-                                new Uri("fabric:/TravelPlanning/FinanceService"),
-                                new ServicePartitionKey(0)
-                            )
-                        );
-
                         builder.WebHost
                                     .UseKestrel()
                                     .UseContentRoot(Directory.GetCurrentDirectory())

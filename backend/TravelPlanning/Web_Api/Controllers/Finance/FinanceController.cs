@@ -15,7 +15,7 @@ namespace Web_Api.Controllers.Finance
     {
         private readonly IFinanceService _financeService;
 
-        public FinanceController(IFinanceService financeService)
+        public FinanceController()
         {
             _financeService = ServiceProxy.Create<IFinanceService>(
                 new Uri("fabric:/TravelPlanning/FinanceService"),

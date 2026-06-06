@@ -4,6 +4,7 @@ using Common.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
 using Microsoft.ServiceFabric.Services.Remoting.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 using System;
@@ -96,7 +97,27 @@ namespace TravelPlanService
             using (var scope = _serviceProvider.CreateScope())
             {
                 var travelPlanService = scope.ServiceProvider.GetRequiredService<IPlanService>();
-                return await travelPlanService.DeleteAsync(planId, userId);
+
+                var result = await travelPlanService.DeleteAsync(planId, userId);
+
+                if (result.IsSuccess)
+                {
+                    try
+                    {
+                        var checklistProxy = ServiceProxy.Create<IChecklistService>(
+                            new Uri("fabric:/TravelPlanning/ChecklistService"));
+
+                        await checklistProxy.DeleteByPlanAsync(planId);
+                    }
+                    catch (Exception ex)
+                    {
+                        //logovanje greske
+                        ServiceEventSource.Current.ServiceMessage(this.Context,
+                            "Greška pri kaskadnom brisanju checkliste za plan {0}: {1}", planId, ex.Message);
+                    }
+                }
+
+                return result;
             }
         }
 
