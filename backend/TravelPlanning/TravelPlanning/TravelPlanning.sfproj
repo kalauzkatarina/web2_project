@@ -38,6 +38,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ChecklistService\ChecklistService.csproj" />
     <ProjectReference Include="..\FinanceService\FinanceService.csproj" />
+    <ProjectReference Include="..\MailingService\MailingService.csproj" />
     <ProjectReference Include="..\TravelPlanService\TravelPlanService.csproj" />
     <ProjectReference Include="..\UserService\UserService.csproj" />
     <ProjectReference Include="..\Web_Api\Web_Api.csproj">

@@ -166,6 +166,7 @@
     <Compile Include="DTOs\finance\BudgetSummaryDto.cs" />
     <Compile Include="DTOs\finance\ExpenseDto.cs" />
     <Compile Include="DTOs\finance\UpdateExpenseDto.cs" />
+    <Compile Include="DTOs\mailing\SendShareEmailDto.cs" />
     <Compile Include="DTOs\travelPlan\ActivityDto.cs" />
     <Compile Include="DTOs\travelPlan\AddActivityDto.cs" />
     <Compile Include="DTOs\travelPlan\AddDestinationDto.cs" />
@@ -189,6 +190,7 @@
     <Compile Include="Interfaces\IChecklistService.cs" />
     <Compile Include="Interfaces\IFinanceService.cs" />
     <Compile Include="Interfaces\IJwtService.cs" />
+    <Compile Include="Interfaces\IMailingService.cs" />
     <Compile Include="Interfaces\IPasswordService.cs" />
     <Compile Include="Interfaces\ITravelPlanService.cs" />
     <Compile Include="Interfaces\IUserService.cs" />

@@ -33,6 +33,7 @@ namespace Common.Interfaces
 
         //Share tokens
         Task<Result<ShareTokenDto>> CreateShareTokenAsync(Guid userId, CreateShareTokenDto dto);
+        Task<Result<ShareTokenDto>> CreateAndSendShareTokenAsync(Guid userId, CreateShareTokenDto dto, string toEmail);
         Task<Result<TravelPlanDto>> GetPlanByShareTokenAsync(string token);
     }
 }

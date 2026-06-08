@@ -222,6 +222,16 @@ namespace TravelPlanService
             }
         }
 
+        public async Task<Result<ShareTokenDto>> CreateAndSendShareTokenAsync(Guid userId, CreateShareTokenDto dto, string toEmail)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var shareTokenService = scope.ServiceProvider.GetRequiredService<IShareTokenService>();
+
+                return await shareTokenService.CreateAndSendAsync(userId, dto, toEmail);
+            }
+        }
+
         public async Task<Result<TravelPlanDto>> GetPlanByShareTokenAsync(string token)
         {
             using (var scope = _serviceProvider.CreateScope())

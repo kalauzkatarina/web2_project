@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinanceService", "FinanceSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChecklistService", "ChecklistService\ChecklistService.csproj", "{BEF5A089-05B2-4121-B5F4-90E7690EBB2F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MailingService", "MailingService\MailingService.csproj", "{393C57CF-A1A2-4F49-95A4-9531EB2D13D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +87,14 @@ Global
 		{BEF5A089-05B2-4121-B5F4-90E7690EBB2F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BEF5A089-05B2-4121-B5F4-90E7690EBB2F}.Release|x64.ActiveCfg = Release|Any CPU
 		{BEF5A089-05B2-4121-B5F4-90E7690EBB2F}.Release|x64.Build.0 = Release|Any CPU
+		{393C57CF-A1A2-4F49-95A4-9531EB2D13D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{393C57CF-A1A2-4F49-95A4-9531EB2D13D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{393C57CF-A1A2-4F49-95A4-9531EB2D13D7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{393C57CF-A1A2-4F49-95A4-9531EB2D13D7}.Debug|x64.Build.0 = Debug|Any CPU
+		{393C57CF-A1A2-4F49-95A4-9531EB2D13D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{393C57CF-A1A2-4F49-95A4-9531EB2D13D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{393C57CF-A1A2-4F49-95A4-9531EB2D13D7}.Release|x64.ActiveCfg = Release|Any CPU
+		{393C57CF-A1A2-4F49-95A4-9531EB2D13D7}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

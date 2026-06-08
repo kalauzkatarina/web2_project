@@ -1,5 +1,8 @@
-﻿using Common.DTOs.travelPlan;
+﻿using Common.DTOs.mailing;
+using Common.DTOs.travelPlan;
+using Common.Interfaces;
 using Common.Models;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +23,39 @@ namespace TravelPlanService.Services
         {
             _shareTokenRepository = shareTokenRepository;
             _travelPlanRepository = travelPlanRepository;
+        }
+
+        public async Task<Result<ShareTokenDto>> CreateAndSendAsync(Guid userId, CreateShareTokenDto dto, string toEmail)
+        {
+            var tokenResult = await CreateAsync(userId, dto);
+            if (!tokenResult.IsSuccess)
+                return tokenResult;
+
+            if (!string.IsNullOrEmpty(toEmail))
+            {
+                try
+                {
+                    var mailingProxy = ServiceProxy.Create<IMailingService>(
+                        new Uri("fabric:/TravelPlanning/MailingService"));
+
+                    var plan = await _travelPlanRepository.GetByIdAsync(dto.PlanId);
+
+                    await mailingProxy.SendShareEmailAsync(new SendShareEmailDto
+                    {
+                        ToEmail = toEmail,
+                        PlanTitle = plan?.Title ?? "Travel plan",
+                        ShareUrl = tokenResult.Data.ShareUrl,
+                        AccessType = dto.AccessType,
+                        ExpiresAt = tokenResult.Data.ExpiresAt
+                    });
+                } 
+                catch (Exception ex)
+                {
+
+                }
+            }
+
+            return tokenResult;
         }
 
         public async Task<Result<ShareTokenDto>> CreateAsync(Guid userId, CreateShareTokenDto dto)

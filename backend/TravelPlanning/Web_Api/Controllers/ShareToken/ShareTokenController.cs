@@ -20,17 +20,22 @@ namespace Web_Api.Controllers.ShareToken
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateShareToken([FromBody] CreateShareTokenDto dto)
+        public async Task<IActionResult> CreateShareToken([FromBody] CreateShareTokenDto dto, [FromQuery] string? email)
         {
             var userId = ClaimsPrincipalHelper.GetUserId(User);
             if (userId == Guid.Empty)
                 return Unauthorized(new { Message = "Invalid token." });
 
-            var result = await _travelPlanService.CreateShareTokenAsync(userId, dto);
-            if (result.IsSuccess)
-                return Ok(result.Data);
+            // Ako je prosleđen email, pozivamo novu metodu
+            if (!string.IsNullOrEmpty(email))
+            {
+                var result = await _travelPlanService.CreateAndSendShareTokenAsync(userId, dto, email);
+                return result.IsSuccess ? Ok(result.Data) : BadRequest(new { Message = result.ErrorMessage });
+            }
 
-            return BadRequest(new { Message = result.ErrorMessage });
+            // Inače pozivamo staru metodu
+            var defaultResult = await _travelPlanService.CreateShareTokenAsync(userId, dto);
+            return defaultResult.IsSuccess ? Ok(defaultResult.Data) : BadRequest(new { Message = defaultResult.ErrorMessage });
         }
 
         // ovaj endpoint je bez Authorize — pristupa mu i osoba sa QR kodom
