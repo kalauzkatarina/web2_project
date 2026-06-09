@@ -4,22 +4,30 @@ import './index.css';
 import { AuthProvider } from './contexts/auth_context/AuthContext';
 import LoginPage from './pages/login/LoginPage';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import TravelPlansPage from './pages/travelPlan/TravelPlansPage';
+import TravelPlanDetailsPage from './pages/travelPlan/TravelPlanDetailsPage';
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Javne rute */}
           <Route path="/login" element={<LoginPage />} />
 
-          {/* Zaštićene rute */}
           <Route
             path="/"
             element={
               <ProtectedRoute>
-                {/* Ovde stavi komponentu za početnu/dashboard */}
-                <div>Dobrodošli u aplikaciju!</div>
+                <TravelPlansPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/plans/:id"
+            element={
+              <ProtectedRoute>
+                <TravelPlanDetailsPage />
               </ProtectedRoute>
             }
           />

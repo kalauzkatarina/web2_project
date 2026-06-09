@@ -1,4 +1,2 @@
---UserService
-trebace validacija za register metodu
-hesiranje lozinke
-login
+--frontend
+validaciju obavezno odraditi
