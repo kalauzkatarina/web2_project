@@ -57,6 +57,16 @@ namespace Web_Api
                         builder.Services.AddFluentValidationClientsideAdapters(); //dodaje klijentske adaptere
                         builder.Services.AddValidatorsFromAssemblyContaining<UserRegisterContractValidator>(); //registruje moj validator, i sve ostale koje imaju AbstarctValidator<>
 
+                        builder.Services.AddCors(options =>
+                        {
+                            options.AddPolicy("AllowReactApp", policy =>
+                            {
+                                policy.WithOrigins("http://localhost:5173") //frontend port
+                                      .AllowAnyMethod()
+                                      .AllowAnyHeader();
+                            });
+                        });
+
                         builder.Services.AddControllers();
                         builder.Services.AddEndpointsApiExplorer();
                         builder.Services.AddSwaggerGen();
@@ -64,6 +74,7 @@ namespace Web_Api
                         builder.Services.AddJwtAuthentication(builder.Configuration);
 
                         var app = builder.Build();
+                        app.UseCors("AllowReactApp");
                         if (app.Environment.IsDevelopment())
                         {
                         app.UseSwagger();
