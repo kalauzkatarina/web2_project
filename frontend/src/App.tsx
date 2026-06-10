@@ -6,19 +6,25 @@ import LoginPage from './pages/login/LoginPage';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import TravelPlansPage from './pages/travelPlan/TravelPlansPage';
 import TravelPlanDetailsPage from './pages/travelPlan/TravelPlanDetailsPage';
+import MainLayout from './components/layout/MainLayout';
+import CreateTravelPlanPage from './pages/travelPlan/CreateTravelPlanPage';
+import EditTravelPlanPage from './pages/travelPlan/EditTravelPlanPage';
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+
           <Route path="/login" element={<LoginPage />} />
 
           <Route
             path="/"
             element={
               <ProtectedRoute>
-                <TravelPlansPage />
+                <MainLayout>
+                  <TravelPlansPage />
+                </MainLayout>
               </ProtectedRoute>
             }
           />
@@ -27,7 +33,31 @@ function App() {
             path="/plans/:id"
             element={
               <ProtectedRoute>
-                <TravelPlanDetailsPage />
+                <MainLayout>
+                  <TravelPlanDetailsPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/plans/create"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <CreateTravelPlanPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+           <Route
+            path="/plans/:id/edit"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <EditTravelPlanPage />
+                </MainLayout>
               </ProtectedRoute>
             }
           />

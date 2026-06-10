@@ -18,6 +18,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const parseToken = (token: string): User | null => {
         try {
             const decoded = jwtDecode<JwtTokenClaims>(token);
+
+            if (decoded.exp * 1000 < Date.now()) {
+                return null;
+            }
+
             return {
                 id: decoded.sub,
                 firstName: "", // Token ne vraća ime/prezime
@@ -34,13 +39,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const token = readItem<string>("token");
         if (token) {
             const user = parseToken(token);
+
+            if (!user) {
+                authService.logout();
+
+                setState({
+                    user: null,
+                    token: null,
+                    isLoading: false,
+                });
+
+                return;
+            }
+
             setState({ user, token, isLoading: false });
         } else {
             setState((prev) => ({ ...prev, isLoading: false }));
         }
     }, []);
 
-    const login = (token: string) => { 
+    const login = (token: string) => {
         saveItem("token", token);
         const user = parseToken(token);
         setState({ user, token, isLoading: false });
@@ -60,7 +78,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isLoading: state.isLoading
     };
 
-   return (
+    return (
         <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
