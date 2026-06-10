@@ -6,12 +6,14 @@ import { FiEdit2 } from "react-icons/fi";
 import { useState } from "react";
 import ConfirmationModal from "../../components/confirmation/ConfirmationModal";
 import { travelPlanService } from "../../api_services/travelPlanApi/TravelPlanApiService";
+import { destinationService } from "../../api_services/destinationApi/DestinationApiService";
 
 export default function TravelPlanDetailsPage() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    
+    const [destinationToDelete, setDestinationToDelete] = useState<string | null>(null);
+
     const { id } = useParams();
-    const { plan, loading } = useTravelPlan(id);
+    const { plan, setPlan, loading } = useTravelPlan(id);
 
     const navigate = useNavigate();
 
@@ -86,9 +88,14 @@ export default function TravelPlanDetailsPage() {
                                 className="
                                     p-3
                                     rounded-2xl
-                                    bg-amber-50
-                                    text-amber-600
-                                    hover:bg-amber-100
+                                    bg-white
+                                    border
+                                    border-stone-200
+                                    text-stone-500
+                                    shadow-sm
+                                    hover:text-amber-600
+                                    hover:border-amber-300
+                                    hover:shadow
                                     transition
                                 "
                             >
@@ -99,13 +106,18 @@ export default function TravelPlanDetailsPage() {
                                 title="Delete Journey"
                                 onClick={() => setShowDeleteModal(true)}
                                 className="
-                                    p-3
-                                    rounded-2xl
-                                    bg-red-50
-                                    text-red-500
-                                    hover:bg-red-100
-                                    transition
-                                "
+    p-3
+    rounded-2xl
+    bg-white
+    border
+    border-stone-200
+    text-stone-500
+    shadow-sm
+    hover:text-red-500
+    hover:border-red-300
+    hover:shadow
+    transition
+"
                             >
                                 <HiOutlineTrash size={18} />
                             </button>
@@ -167,9 +179,29 @@ export default function TravelPlanDetailsPage() {
 
                 <div className="mt-12">
 
-                    <h2 className="text-3xl font-bold text-stone-900 mb-6">
-                        Destinations
-                    </h2>
+                    <div className="flex justify-between items-center mb-6">
+
+                        <h2 className="text-3xl font-bold text-stone-900">
+                            Destinations
+                        </h2>
+
+                        <button
+                            onClick={() =>
+                                navigate(`/plans/${plan.id}/destinations/create`)
+                            }
+                            className="
+                                px-5
+                                py-3
+                                rounded-xl
+                                bg-amber-500
+                                text-white
+                                hover:bg-amber-600
+                            "
+                        >
+                            + Add Destination
+                        </button>
+
+                    </div>
 
                     {plan.destinations.length === 0 ? (
                         <div
@@ -191,6 +223,12 @@ export default function TravelPlanDetailsPage() {
                                 <DestinationCard
                                     key={destination.id}
                                     destination={destination}
+                                    onEdit={(id) =>
+                                        navigate(`/destinations/${id}/edit`)
+                                    }
+                                    onDelete={(id) =>
+                                        setDestinationToDelete(id)
+                                    }
                                 />
                             ))}
                         </div>
@@ -209,6 +247,38 @@ export default function TravelPlanDetailsPage() {
                 onConfirm={async () => {
                     await travelPlanService.delete(plan.id);
                     navigate("/");
+                }}
+            />
+
+            <ConfirmationModal
+                isOpen={destinationToDelete !== null}
+                title="Delete Destination"
+                message="Are you sure you want to delete this destination? This action cannot be undone."
+                confirmText="Delete"
+                onCancel={() =>
+                    setDestinationToDelete(null)
+                }
+                onConfirm={async () => {
+
+                    if (!destinationToDelete)
+                        return;
+
+                    await destinationService.delete(
+                        destinationToDelete
+                    );
+
+                    setPlan(prev =>
+                        prev
+                            ? {
+                                ...prev,
+                                destinations: prev.destinations.filter(
+                                    d => d.id !== destinationToDelete
+                                ),
+                            }
+                            : prev
+                    );
+
+                    setDestinationToDelete(null);
                 }}
             />
 

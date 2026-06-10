@@ -1,10 +1,12 @@
-import { HiOutlineLocationMarker } from "react-icons/hi";
-import { FiCalendar } from "react-icons/fi";
+import { HiOutlineLocationMarker, HiOutlineTrash } from "react-icons/hi";
+import { FiCalendar, FiEdit2 } from "react-icons/fi";
 import ActivityCard from "../activity/ActivityCard";
 import type { DestinationCardProps } from "../../types/props/destination/DestinationCardProps";
 
 export default function DestinationCard({
     destination,
+    onEdit,
+    onDelete,
 }: DestinationCardProps) {
     return (
         <div
@@ -46,19 +48,64 @@ export default function DestinationCard({
                     </div>
                 </div>
 
-                <div
-                    className="
-                        flex
-                        items-center
-                        gap-2
-                        text-sm
-                        text-stone-500
-                    "
-                >
-                    <FiCalendar />
-                    {new Date(destination.arrivalDate).toLocaleDateString()}
+                <div className="flex gap-2">
+
+                    <button
+                        title="Edit Destination"
+                        onClick={() => onEdit(destination.id)}
+                        className="
+                            p-3
+                            rounded-2xl
+                            bg-white
+                            border
+                            border-stone-200
+                            text-stone-500
+                            shadow-sm
+                            hover:text-amber-600
+                            hover:border-amber-300
+                            hover:shadow
+                            transition
+                        "
+                    >
+                        <FiEdit2 size={18} />
+                    </button>
+
+                    <button
+                        title="Delete Destination"
+                        onClick={() => onDelete(destination.id)}
+                        className="
+                            p-3
+                            rounded-2xl
+                            bg-white
+                            border
+                            border-stone-200
+                            text-stone-500
+                            shadow-sm
+                            hover:text-red-500
+                            hover:border-red-300
+                            hover:shadow
+                            transition
+                        "
+                    >
+                        <HiOutlineTrash size={18} />
+                    </button>
+
                 </div>
 
+            </div>
+
+            <div
+                className="
+                    flex
+                    items-center
+                    gap-2
+                    text-sm
+                    text-stone-500
+                    mt-4
+                "
+            >
+                <FiCalendar />
+                {new Date(destination.arrivalDate).toLocaleDateString()}
             </div>
 
             {destination.description && (

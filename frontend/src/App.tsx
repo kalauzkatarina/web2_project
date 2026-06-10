@@ -9,6 +9,8 @@ import TravelPlanDetailsPage from './pages/travelPlan/TravelPlanDetailsPage';
 import MainLayout from './components/layout/MainLayout';
 import CreateTravelPlanPage from './pages/travelPlan/CreateTravelPlanPage';
 import EditTravelPlanPage from './pages/travelPlan/EditTravelPlanPage';
+import CreateDestinationPage from './pages/destination/CreateDestinationPage';
+import EditDestinationPage from './pages/destination/EditDestinationPage';
 
 function App() {
   return (
@@ -51,12 +53,34 @@ function App() {
             }
           />
 
-           <Route
+          <Route
             path="/plans/:id/edit"
             element={
               <ProtectedRoute>
                 <MainLayout>
                   <EditTravelPlanPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/plans/:id/destinations/create"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <CreateDestinationPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/destinations/:id/edit"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <EditDestinationPage />
                 </MainLayout>
               </ProtectedRoute>
             }

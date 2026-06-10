@@ -13,8 +13,8 @@ export default function TravelPlansPage() {
         <div className="max-w-7xl mx-auto px-6 py-10">
             <div className="flex justify-between items-center mb-10">
 
-    <div>
-         <p
+                <div>
+                    <p
                         className="
                             uppercase
                             tracking-widest
@@ -26,14 +26,14 @@ export default function TravelPlansPage() {
                         Travel Plan
                     </p>
 
-        <h1 className="text-5xl font-bold text-stone-900 mt-2">
-            My Journeys
-        </h1>
-    </div>
+                    <h1 className="text-5xl font-bold text-stone-900 mt-2">
+                        My Journeys
+                    </h1>
+                </div>
 
-    <button
-        onClick={() => navigate("/plans/create")}
-        className="
+                <button
+                    onClick={() => navigate("/plans/create")}
+                    className="
             px-5
             py-3
             rounded-2xl
@@ -42,11 +42,11 @@ export default function TravelPlansPage() {
             font-semibold
             hover:bg-amber-600
         "
-    >
-        + New Journey
-    </button>
+                >
+                    + New Journey
+                </button>
 
-</div>
+            </div>
 
             <div className="grid gap-4">
                 {plans.map((plan) => (

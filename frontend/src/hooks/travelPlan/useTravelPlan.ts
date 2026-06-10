@@ -23,6 +23,7 @@ export function useTravelPlan(id: string | undefined) {
 
     return {
         plan,
+        setPlan,
         loading,
         refresh: loadPlan,
     };

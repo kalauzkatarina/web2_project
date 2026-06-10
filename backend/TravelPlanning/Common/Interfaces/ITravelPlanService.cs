@@ -21,6 +21,7 @@ namespace Common.Interfaces
         //Destinations
         Task<Result<DestinationDto>> AddDestinationAsync(Guid userId, AddDestinationDto dto);
         Task<Result<List<DestinationDto>>> GetDestinationsByPlanAsync(Guid planId, Guid userId);
+        Task<Result<DestinationDto>> GetDestinationByIdAsync(Guid destinationId, Guid userId);
         Task<Result<bool>> UpdateDestinationAsync(Guid destinationId, Guid userId, UpdateDestionationDto dto);
         Task<Result<bool>> DeleteDestinationAsync(Guid destinationId, Guid userId);
 
