@@ -2,12 +2,18 @@ import { HiOutlineLocationMarker, HiOutlineTrash } from "react-icons/hi";
 import { FiCalendar, FiEdit2 } from "react-icons/fi";
 import ActivityCard from "../activity/ActivityCard";
 import type { DestinationCardProps } from "../../types/props/destination/DestinationCardProps";
+import { useNavigate } from "react-router-dom";
 
 export default function DestinationCard({
     destination,
     onEdit,
     onDelete,
+    onActivityEdit,
+    onActivityDelete,
 }: DestinationCardProps) {
+
+    const navigate = useNavigate();
+
     return (
         <div
             className="
@@ -114,41 +120,30 @@ export default function DestinationCard({
                 </p>
             )}
 
-            {destination.activities.length > 0 && (
-                <div className="mt-6">
+            <div className="flex items-center justify-between mb-4">
+                <h4 className="font-bold text-stone-900">Activities</h4>
 
-                    <div className="flex items-center justify-between mb-4">
+               <button
+                    onClick={() => navigate(`/destinations/${destination.id}/activities/create`)}
+                    className="px-5 py-3 rounded-xl bg-amber-500 text-white font-semibold hover:bg-amber-600 transition shadow-sm"
+                >
+                    + Add Activity
+                </button>
+            </div>
 
-                        <h4 className="font-bold text-stone-900">
-                            Activities
-                        </h4>
-
-                        <div
-                            className="
-                                px-3
-                                py-1
-                                rounded-full
-                                bg-amber-100
-                                text-amber-700
-                                text-sm
-                                font-semibold
-                            "
-                        >
-                            {destination.activities.length}
-                        </div>
-
-                    </div>
-
-                    <div className="space-y-3">
-                        {destination.activities.map((activity) => (
-                            <ActivityCard
-                                key={activity.id}
-                                activity={activity}
-                            />
-                        ))}
-                    </div>
-
+            {destination.activities.length > 0 ? (
+                <div className="space-y-3">
+                    {destination.activities.map((activity) => (
+                        <ActivityCard
+                            key={activity.id}
+                            activity={activity}
+                            onEdit={onActivityEdit}
+                            onDelete={onActivityDelete}
+                        />
+                    ))}
                 </div>
+            ) : (
+                <p className="text-sm text-stone-400 italic">No activities added yet.</p>
             )}
         </div>
     );

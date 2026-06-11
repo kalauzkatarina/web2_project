@@ -12,6 +12,7 @@ export default function TravelPlanCard({
         <div
             onClick={() => navigate(`/plans/${plan.id}`)}
             className="
+                flex
                 bg-white
                 rounded-[2rem]
                 overflow-hidden
@@ -24,10 +25,9 @@ export default function TravelPlanCard({
                 hover:border-amber-300
             "
         >
-            <div className="h-2 bg-amber-500" />
+            <div className="w-2 bg-amber-500" />
 
-            <div className="p-7">
-
+            <div className="p-7 flex-1">
                 <h3 className="text-2xl font-bold text-stone-900">
                     {plan.title}
                 </h3>
@@ -38,7 +38,6 @@ export default function TravelPlanCard({
 
                 {plan.destinations.length > 0 && (
                     <div className="mt-5 flex flex-wrap gap-2">
-
                         {plan.destinations
                             .slice(0, 3)
                             .map((destination) => (
@@ -57,21 +56,17 @@ export default function TravelPlanCard({
                                     "
                                 >
                                     <HiOutlineLocationMarker />
-
                                     {destination.name}
                                 </div>
                             ))}
-
                     </div>
                 )}
 
                 <div className="mt-6 pt-5 border-t border-stone-100 flex justify-between items-center">
-
                     <div>
                         <p className="text-xs uppercase text-stone-400">
                             Travel Dates
                         </p>
-
                         <p className="font-medium text-stone-700 mt-1">
                             {new Date(plan.startDate).toLocaleDateString()}
                             {" - "}
@@ -83,14 +78,11 @@ export default function TravelPlanCard({
                         <p className="text-xs uppercase text-stone-400">
                             Budget
                         </p>
-
                         <p className="text-2xl font-bold text-amber-600 mt-1">
                             €{plan.plannedBudget}
                         </p>
                     </div>
-
                 </div>
-
             </div>
         </div>
     );

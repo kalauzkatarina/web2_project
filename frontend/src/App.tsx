@@ -11,6 +11,8 @@ import CreateTravelPlanPage from './pages/travelPlan/CreateTravelPlanPage';
 import EditTravelPlanPage from './pages/travelPlan/EditTravelPlanPage';
 import CreateDestinationPage from './pages/destination/CreateDestinationPage';
 import EditDestinationPage from './pages/destination/EditDestinationPage';
+import CreateActivityPage from './pages/activity/CreateActivityPage';
+import EditActivityPage from './pages/activity/EditActivityPage';
 
 function App() {
   return (
@@ -81,6 +83,28 @@ function App() {
               <ProtectedRoute>
                 <MainLayout>
                   <EditDestinationPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/destinations/:id/activities/create"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <CreateActivityPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/activities/:id/edit"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <EditActivityPage />
                 </MainLayout>
               </ProtectedRoute>
             }

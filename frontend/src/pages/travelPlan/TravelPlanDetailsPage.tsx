@@ -7,10 +7,12 @@ import { useState } from "react";
 import ConfirmationModal from "../../components/confirmation/ConfirmationModal";
 import { travelPlanService } from "../../api_services/travelPlanApi/TravelPlanApiService";
 import { destinationService } from "../../api_services/destinationApi/DestinationApiService";
+import { activityService } from "../../api_services/activityApi/ActivityApiService";
 
 export default function TravelPlanDetailsPage() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [destinationToDelete, setDestinationToDelete] = useState<string | null>(null);
+    const [activityToDelete, setActivityToDelete] = useState<string | null>(null);
 
     const { id } = useParams();
     const { plan, setPlan, loading } = useTravelPlan(id);
@@ -106,18 +108,18 @@ export default function TravelPlanDetailsPage() {
                                 title="Delete Journey"
                                 onClick={() => setShowDeleteModal(true)}
                                 className="
-    p-3
-    rounded-2xl
-    bg-white
-    border
-    border-stone-200
-    text-stone-500
-    shadow-sm
-    hover:text-red-500
-    hover:border-red-300
-    hover:shadow
-    transition
-"
+                                        p-3
+                                        rounded-2xl
+                                        bg-white
+                                        border
+                                        border-stone-200
+                                        text-stone-500
+                                        shadow-sm
+                                        hover:text-red-500
+                                        hover:border-red-300
+                                        hover:shadow
+                                        transition
+                                    "
                             >
                                 <HiOutlineTrash size={18} />
                             </button>
@@ -229,6 +231,12 @@ export default function TravelPlanDetailsPage() {
                                     onDelete={(id) =>
                                         setDestinationToDelete(id)
                                     }
+                                    onActivityEdit={(id) =>
+                                        navigate(`/activities/${id}/edit`)
+                                    }
+                                    onActivityDelete={(id) =>
+                                        setActivityToDelete(id)
+                                    }
                                 />
                             ))}
                         </div>
@@ -279,6 +287,43 @@ export default function TravelPlanDetailsPage() {
                     );
 
                     setDestinationToDelete(null);
+                }}
+            />
+
+            <ConfirmationModal
+                isOpen={activityToDelete !== null}
+                title="Delete Activity"
+                message="Are you sure you want to delete this activity?"
+                confirmText="Delete"
+                onCancel={() =>
+                    setActivityToDelete(null)
+                }
+                onConfirm={async () => {
+
+                    if (!activityToDelete)
+                        return;
+
+                    await activityService.delete(
+                        activityToDelete
+                    );
+
+                    setPlan(prev =>
+                        prev
+                            ? {
+                                ...prev,
+                                destinations:
+                                    prev.destinations.map(d => ({
+                                        ...d,
+                                        activities:
+                                            d.activities.filter(
+                                                a => a.id !== activityToDelete
+                                            )
+                                    }))
+                            }
+                            : prev
+                    );
+
+                    setActivityToDelete(null);
                 }}
             />
 

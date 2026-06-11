@@ -137,6 +137,26 @@ namespace TravelPlanService.Services
             return Result<List<ActivityDto>>.Success(dtos);
         }
 
+        public async Task<Result<ActivityDto>> GetByIdAsync(Guid activityId, Guid userId)
+        {
+            var activity = await _activityRepository.GetByIdAsync(activityId);
+
+            if (activity == null)
+                return Result<ActivityDto>.Failure("Activity not found.");
+
+            var destination = await _destinationRepository.GetByIdAsync(activity.DestinationId);
+
+            if (destination == null)
+                return Result<ActivityDto>.Failure("Destination not found.");
+
+            var plan = await _travelPlanRepository.GetByIdAsync(destination.TravelPlanId);
+
+            if (plan == null || plan.UserId != userId)
+                return Result<ActivityDto>.Failure("You are not authorized to view this activity.");
+
+            return Result<ActivityDto>.Success(ActivityMapper.ToDto(activity));
+        }
+
         public async Task<Result<bool>> UpdateAsync(Guid activityId, Guid userId, UpdateActivityDto dto)
         {
             var activity = await _activityRepository.GetByIdAsync(activityId);

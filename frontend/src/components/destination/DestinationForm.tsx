@@ -40,7 +40,7 @@ export default function DestinationForm({
         >
 
             <div>
-                <label className="block mb-2 text-sm font-medium text-stone-700">
+                <label className="form-label">
                     Destination Name
                 </label>
 
@@ -49,23 +49,12 @@ export default function DestinationForm({
                     value={form.name}
                     onChange={handleChange}
                     placeholder="Paris"
-                    className="
-                        w-full
-                        p-4
-                        rounded-2xl
-                        border
-                        border-stone-200
-                        shadow-sm
-                        bg-[#fafaf9]
-                        focus:border-amber-500
-                        focus:bg-white
-                        focus:outline-none
-                    "
+                    className="form-input"
                 />
             </div>
 
             <div>
-                <label className="block mb-2 text-sm font-medium text-stone-700">
+                <label className="form-label">
                     Location
                 </label>
 
@@ -74,25 +63,14 @@ export default function DestinationForm({
                     value={form.location}
                     onChange={handleChange}
                     placeholder="France"
-                    className="
-                        w-full
-                        p-4
-                        rounded-2xl
-                        border
-                        border-stone-200
-                        shadow-sm
-                        bg-[#fafaf9]
-                        focus:border-amber-500
-                        focus:bg-white
-                        focus:outline-none
-                    "
+                    className="form-input"
                 />
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
 
                 <div>
-                    <label className="block mb-2 text-sm font-medium text-stone-700">
+                    <label className="form-label">
                         Arrival Date
                     </label>
 
@@ -101,20 +79,12 @@ export default function DestinationForm({
                         name="arrivalDate"
                         value={form.arrivalDate}
                         onChange={handleChange}
-                        className="
-                            w-full
-                            p-4
-                            rounded-2xl
-                            border
-                            border-stone-200
-                            shadow-sm
-                            bg-[#fafaf9]
-                        "
+                        className="form-input"
                     />
                 </div>
 
                 <div>
-                    <label className="block mb-2 text-sm font-medium text-stone-700">
+                    <label className="form-label">
                         Departure Date
                     </label>
 
@@ -123,22 +93,14 @@ export default function DestinationForm({
                         name="departureDate"
                         value={form.departureDate}
                         onChange={handleChange}
-                        className="
-                            w-full
-                            p-4
-                            rounded-2xl
-                            border
-                            border-stone-200
-                            shadow-sm
-                            bg-[#fafaf9]
-                        "
+                        className="form-input"
                     />
                 </div>
 
             </div>
 
             <div>
-                <label className="block mb-2 text-sm font-medium text-stone-700">
+                <label className="form-label">
                     Description
                 </label>
 
@@ -147,16 +109,7 @@ export default function DestinationForm({
                     value={form.description}
                     onChange={handleChange}
                     placeholder="Describe this destination..."
-                    className="
-                        w-full
-                        h-32
-                        p-4
-                        rounded-2xl
-                        border
-                        border-stone-200
-                        shadow-sm
-                        bg-[#fafaf9]
-                    "
+                    className="form-input h-32"
                 />
             </div>
 

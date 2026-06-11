@@ -1,11 +1,13 @@
-import { HiOutlineLocationMarker, } from "react-icons/hi";
+import { HiOutlineLocationMarker, HiOutlineTrash, } from "react-icons/hi";
 import { MdOutlineEuro, } from "react-icons/md";
-import { FiClock, FiCalendar, } from "react-icons/fi";
+import { FiClock, FiCalendar, FiEdit2, } from "react-icons/fi";
 import { getActivityStatus, getExpenseCategory } from "../../helpers/activityHelper";
 import type { ActivityCardProps } from "../../types/props/activity/ActivityCardProps";
 
 export default function ActivityCard({
     activity,
+    onDelete,
+    onEdit
 }: ActivityCardProps) {
 
     return (
@@ -20,42 +22,41 @@ export default function ActivityCard({
                 transition
             "
         >
-            <div className="flex justify-between items-start">
-
-                <div>
-
-                    <h4 className="text-lg font-bold text-stone-900">
-                        {activity.title}
-                    </h4>
-
+            <div className="flex justify-between items-start gap-4">
+                <div className="flex-grow">
+                    <h4 className="text-lg font-bold text-stone-900">{activity.title}</h4>
                     <div className="flex items-center gap-2 mt-2 text-stone-500">
                         <HiOutlineLocationMarker className="text-amber-500" />
                         <span>{activity.location}</span>
                     </div>
-
                 </div>
 
-                <div
-                    className="
-                        flex
-                        items-center
-                        gap-1
-                        px-3
-                        py-1
-                        rounded-full
-                        bg-white
-                        border
-                        border-amber-200
-                        text-amber-700
-                        font-semibold
-                    "
-                >
-                    <MdOutlineEuro />
-                    {activity.estimatedCost}
-                </div>
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-white border border-amber-200 text-amber-700 font-semibold whitespace-nowrap">
+                        <MdOutlineEuro />
+                        {activity.estimatedCost}
+                    </div>
 
+                    <div className="flex gap-2">
+                        {onEdit && (
+                            <button
+                                onClick={() => onEdit(activity.id)}
+                                className="p-2 rounded-xl bg-white border border-stone-200 text-stone-500 shadow-sm hover:text-amber-600 hover:border-amber-300 hover:shadow transition"
+                            >
+                                <FiEdit2 size={18} />
+                            </button>
+                        )}
+                        {onDelete && (
+                            <button
+                                onClick={() => onDelete(activity.id)}
+                                className="p-2 rounded-xl bg-white border border-stone-200 text-stone-500 shadow-sm hover:text-red-500 hover:border-red-300 hover:shadow transition"
+                            >
+                                <HiOutlineTrash size={18} />
+                            </button>
+                        )}
+                    </div>
+                </div>
             </div>
-
             {activity.description && (
                 <p className="mt-4 text-stone-600">
                     {activity.description}

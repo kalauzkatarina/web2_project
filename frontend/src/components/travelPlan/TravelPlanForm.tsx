@@ -40,7 +40,7 @@ export default function TravelPlanForm({
             className="space-y-5"
         >
             <div>
-                <label className="block mb-2 text-sm font-medium text-stone-700">
+                <label className="form-label">
                     Journey Title
                 </label>
 
@@ -49,24 +49,13 @@ export default function TravelPlanForm({
                     value={form.title}
                     onChange={handleChange}
                     placeholder="Summer in Italy"
-                    className="
-                        w-full 
-                        p-4 
-                        rounded-2xl 
-                        border 
-                        border-stone-200 
-                        shadow-sm
-                        bg-[#fafaf9]
-                        focus:border-amber-500
-                        focus:bg-white
-                        focus:outline-none
-                        transition-all"
+                    className="form-input"
                 />
             </div>
 
 
             <div>
-                <label className="block mb-2 text-sm font-medium text-stone-700">
+                <label className="form-label">
                     Description
                 </label>
 
@@ -75,26 +64,14 @@ export default function TravelPlanForm({
                     value={form.description}
                     onChange={handleChange}
                     placeholder="Describe your trip..."
-                    className="
-                        w-full 
-                        p-4 
-                        rounded-2xl 
-                        border 
-                        border-stone-200 
-                        h-32 
-                        shadow-sm
-                        bg-[#fafaf9]
-                        focus:border-amber-500
-                        focus:bg-white
-                        focus:outline-none
-                        transition-all"
+                    className="form-input"
                 />
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
 
                 <div>
-                    <label className="block mb-2 text-sm font-medium text-stone-700">
+                    <label className="form-label">
                         Start Date
                     </label>
 
@@ -103,23 +80,12 @@ export default function TravelPlanForm({
                         name="startDate"
                         value={form.startDate}
                         onChange={handleChange}
-                        className="
-                        w-full 
-                        p-4 
-                        rounded-2xl 
-                        border 
-                        border-stone-200  
-                        shadow-sm
-                        bg-[#fafaf9]
-                        focus:border-amber-500
-                        focus:bg-white
-                        focus:outline-none
-                        transition-all"
+                        className="form-input"
                     />
                 </div>
 
                 <div>
-                    <label className="block mb-2 text-sm font-medium text-stone-700">
+                    <label className="form-label">
                         End Date
                     </label>
 
@@ -128,25 +94,14 @@ export default function TravelPlanForm({
                         name="endDate"
                         value={form.endDate}
                         onChange={handleChange}
-                        className="
-                        w-full 
-                        p-4 
-                        rounded-2xl 
-                        border 
-                        border-stone-200  
-                        shadow-sm
-                        bg-[#fafaf9]
-                        focus:border-amber-500
-                        focus:bg-white
-                        focus:outline-none
-                        transition-all"
+                        className="form-input"
                     />
                 </div>
 
             </div>
 
             <div>
-                <label className="block mb-2 text-sm font-medium text-stone-700">
+                <label className="form-label">
                     Planned Budget (€)
                 </label>
 
@@ -156,24 +111,12 @@ export default function TravelPlanForm({
                     value={form.plannedBudget || ""}
                     onChange={handleChange}
                     placeholder="2500"
-                    className="
-                        w-full
-                        p-4
-                        rounded-2xl
-                        border
-                        border-stone-200
-                        shadow-sm
-                        bg-[#fafaf9]
-                        focus:border-amber-500
-                        focus:bg-white
-                        focus:outline-none
-                        transition-all
-                    "
+                    className="form-input"
                 />
             </div>
 
             <div>
-                <label className="block mb-2 text-sm font-medium text-stone-700">
+                <label className="form-label">
                     General Notes
                 </label>
 
@@ -182,19 +125,7 @@ export default function TravelPlanForm({
                     value={form.generalNotes}
                     onChange={handleChange}
                     placeholder="Anything important for this trip..."
-                    className="
-                        w-full 
-                        p-4 
-                        rounded-2xl 
-                        border 
-                        border-stone-200 
-                        h-32  
-                        shadow-sm
-                        bg-[#fafaf9]
-                        focus:border-amber-500
-                        focus:bg-white
-                        focus:outline-none
-                        transition-all"
+                    className="form-input h-32"
                 />
             </div>
 

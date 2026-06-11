@@ -200,6 +200,14 @@ namespace TravelPlanService
             }
         }
 
+        public async Task<Result<ActivityDto>> GetActivityByIdAsync(Guid activityId, Guid userId)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var activityService = scope.ServiceProvider.GetRequiredService<IActivityService>();
+                return await activityService.GetByIdAsync(activityId, userId);
+            }
+        }
         public async Task<Result<bool>> UpdateActivityAsync(Guid activityId, Guid userId, UpdateActivityDto dto)
         {
             using (var scope = _serviceProvider.CreateScope())

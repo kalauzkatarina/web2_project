@@ -35,7 +35,7 @@ export default function EditDestinationPage() {
             <div className="max-w-5xl mx-auto px-6 py-10">
 
                 <button
-                    onClick={() => navigate(`/plans/${destination.travelPlanId}`)}
+                    onClick={() => navigate(-1)}
                     className="
                                         flex
                                         items-center

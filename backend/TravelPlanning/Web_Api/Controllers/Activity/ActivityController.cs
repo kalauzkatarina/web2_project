@@ -67,6 +67,25 @@ namespace Web_Api.Controllers.Activity
             return BadRequest(new { Message = result.ErrorMessage });
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(string id)
+        {
+            if (!Guid.TryParse(id, out Guid activityId))
+                return BadRequest(new { Message = "Invalid ID format." });
+
+            var userId = ClaimsPrincipalHelper.GetUserId(User);
+
+            if (userId == Guid.Empty)
+                return Unauthorized(new { Message = "Invalid token." });
+
+            var result = await _travelPlanService.GetActivityByIdAsync(activityId, userId);
+
+            if (result.IsSuccess)
+                return Ok(result.Data);
+
+            return NotFound(new { Message = result.ErrorMessage });
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateActivity(string id, [FromBody] UpdateActivityDto dto)
         {
