@@ -8,6 +8,11 @@ import ConfirmationModal from "../../components/confirmation/ConfirmationModal";
 import { travelPlanService } from "../../api_services/travelPlanApi/TravelPlanApiService";
 import { destinationService } from "../../api_services/destinationApi/DestinationApiService";
 import { activityService } from "../../api_services/activityApi/ActivityApiService";
+import { useFinance } from "../../hooks/finance/useFinance";
+import BudgetSummaryCard from "../../components/finance/BudgetSummaryCard";
+import AddExpenseForm from "../../components/finance/AddExpenseForm";
+import { financeService } from "../../api_services/financeApi/FinanceApiService";
+import ExpenseList from "../../components/finance/ExpenseList";
 
 export default function TravelPlanDetailsPage() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -16,6 +21,9 @@ export default function TravelPlanDetailsPage() {
 
     const { id } = useParams();
     const { plan, setPlan, loading } = useTravelPlan(id);
+
+    const { expenses, summary, refetch } = useFinance(id);
+    const [showAddExpense, setShowAddExpense] = useState(false);
 
     const navigate = useNavigate();
 
@@ -242,6 +250,43 @@ export default function TravelPlanDetailsPage() {
                         </div>
                     )}
 
+                </div>
+
+                <div className="mt-12">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-3xl font-bold text-stone-900">Budget & Expenses</h2>
+                        <button
+                            onClick={() => setShowAddExpense(!showAddExpense)}
+                            className="px-5 py-3 rounded-xl bg-amber-500 text-white font-semibold hover:bg-amber-600 transition shadow-sm"
+                        >
+                            + Add Expense
+                        </button>
+                    </div>
+
+                    {summary && <BudgetSummaryCard summary={summary} />}
+
+                    {showAddExpense && (
+                        <AddExpenseForm
+                            planId={plan.id}
+                            onClose={() => setShowAddExpense(false)}
+                            onAdd={async (data) => {
+                                await financeService.addExpense(data);
+                                // Dodaj kratak delay ako serveru treba sekunda da obradi bazu
+                                await new Promise(resolve => setTimeout(resolve, 300));
+                                await refetch();
+                                setShowAddExpense(false); // Zatvori formu tek kad se podaci osveže
+                            }}
+                        />
+                    )}
+
+                    <ExpenseList
+                        expenses={expenses}
+                        onDelete={async (expenseId) => {
+                            await financeService.deleteExpense(expenseId);
+                            await new Promise(resolve => setTimeout(resolve, 300));
+                            await refetch();
+                        }}
+                    />
                 </div>
 
             </div>

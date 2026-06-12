@@ -2,7 +2,8 @@
 
 @layer base {
   body {
-    background-color: #fafaf9; /*Warm Sand*/
+    background-color: #fafaf9;
+    /*Warm Sand*/
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -13,26 +14,32 @@
   .form-input {
     @apply w-full p-4 rounded-2xl border border-stone-200 shadow-sm bg-[#fafaf9] focus:border-amber-500 focus:bg-white focus:outline-none transition-colors;
   }
-  
+
   .form-label {
     @apply block mb-2 text-sm font-medium text-stone-700;
   }
-  
+
   .btn-primary {
     @apply px-10 py-4 rounded-2xl bg-amber-500 text-white font-semibold hover:bg-amber-600 transition-colors;
   }
 }
 
+select.form-input {
+  /*appearance-none: Govori pretraživaču "nemoj koristiti sistemski izgled za select".*/
+  @apply appearance-none bg-[url('https://api.iconify.design/heroicons/chevron-down-20-solid.svg')] bg-[right_1rem_center] bg-no-repeat bg-[length:1.5em_1.5em];
+  padding-right: 3rem;
+}
+
 .trip-day {
-    background: #fef3c7 !important;
-    border-radius: 9999px;
+  background: #fef3c7 !important;
+  border-radius: 9999px;
 }
 
 .activity-day {
-    background: #f59e0b !important;
-    color: white !important;
-    border-radius: 9999px;
-    font-weight: 600;
+  background: #f59e0b !important;
+  color: white !important;
+  border-radius: 9999px;
+  font-weight: 600;
 }
 
 .react-calendar {
@@ -42,7 +49,7 @@
 }
 
 .react-calendar__month-view__days__day {
-  height: 50px !important; 
+  height: 50px !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center;
@@ -61,5 +68,5 @@
 .react-calendar__navigation button {
   font-weight: bold;
   font-size: 1.2rem;
-  color: #57534e; 
+  color: #57534e;
 }

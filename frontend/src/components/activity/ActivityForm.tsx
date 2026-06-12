@@ -59,7 +59,7 @@ export default function ActivityForm({
                     value={form.title || ""}
                     placeholder="Title of the activity"
                     onChange={handleChange}
-                     className="form-input"
+                    className="form-input"
                 />
             </div>
 
@@ -120,7 +120,7 @@ export default function ActivityForm({
                     value={form.estimatedCost || ""}
                     placeholder="2500"
                     onChange={handleChange}
-                     className="form-input"
+                    className="form-input"
                 />
             </div>
 
@@ -135,7 +135,7 @@ export default function ActivityForm({
                         name="status"
                         value={form.status}
                         onChange={handleChange}
-                         className="form-input"
+                        className="form-input"
                     >
                         {Object.entries(ActivityStatus).map(([key, value]) => (
                             <option
@@ -153,20 +153,12 @@ export default function ActivityForm({
                         Category
                     </label>
 
-                    <select
-                        name="category"
-                        value={form.category}
-                        onChange={handleChange}
-                         className="form-input"
-                    >
-                        {Object.entries(ExpenseCategory).map(([key, value]) => (
-                            <option
-                                key={key}
-                                value={key}
-                            >
-                                {value}
-                            </option>
-                        ))}
+                    <select name="category" value={form.category} onChange={handleChange} className="form-input">
+                        {Object.entries(ExpenseCategory)
+                            .filter(([key]) => isNaN(Number(key))) //ovo stavlja "food", "transport"...
+                            .map(([key, value]) => (
+                                <option key={value} value={value}>{key}</option>
+                            ))}
                     </select>
                 </div>
 
