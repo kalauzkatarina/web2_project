@@ -157,6 +157,18 @@ namespace TravelPlanService.Services
             return Result<ActivityDto>.Success(ActivityMapper.ToDto(activity));
         }
 
+        public async Task<Result<List<ActivityDto>>> GetByPlanAsync(Guid planId, Guid userId)
+        {
+            var plan = await _travelPlanRepository.GetByIdAsync(planId);
+
+            if (plan == null || plan.UserId != userId)
+                return Result<List<ActivityDto>>.Failure("You are not authorized to view activities.");
+
+            var activities = await _activityRepository.GetByPlanIdAsync(planId);
+
+            return Result<List<ActivityDto>>.Success(activities.Select(ActivityMapper.ToDto).ToList());
+        }
+
         public async Task<Result<bool>> UpdateAsync(Guid activityId, Guid userId, UpdateActivityDto dto)
         {
             var activity = await _activityRepository.GetByIdAsync(activityId);

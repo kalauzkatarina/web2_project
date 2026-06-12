@@ -13,6 +13,7 @@ import CreateDestinationPage from './pages/destination/CreateDestinationPage';
 import EditDestinationPage from './pages/destination/EditDestinationPage';
 import CreateActivityPage from './pages/activity/CreateActivityPage';
 import EditActivityPage from './pages/activity/EditActivityPage';
+import ActivityCalendarPage from './pages/activity/ActivityCalendarPage';
 
 function App() {
   return (
@@ -105,6 +106,17 @@ function App() {
               <ProtectedRoute>
                 <MainLayout>
                   <EditActivityPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/plans/:id/calendar"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  < ActivityCalendarPage/>
                 </MainLayout>
               </ProtectedRoute>
             }

@@ -15,6 +15,10 @@ export interface IActivityApiService {
 
     getById(id: string): Promise<ActivityDto>;
 
+    getByPlan(
+        planId: string
+    ): Promise<ActivityDto[]>;
+
     create(
         data: CreateActivityDto
     ): Promise<ActivityDto>;

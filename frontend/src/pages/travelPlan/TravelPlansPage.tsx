@@ -34,14 +34,14 @@ export default function TravelPlansPage() {
                 <button
                     onClick={() => navigate("/plans/create")}
                     className="
-            px-5
-            py-3
-            rounded-2xl
-            bg-amber-500
-            text-white
-            font-semibold
-            hover:bg-amber-600
-        "
+                        px-5
+                        py-3
+                        rounded-2xl
+                        bg-amber-500
+                        text-white
+                        font-semibold
+                        hover:bg-amber-600
+                    "
                 >
                     + New Journey
                 </button>

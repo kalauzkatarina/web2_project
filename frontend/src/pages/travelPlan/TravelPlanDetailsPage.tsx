@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useTravelPlan } from "../../hooks/travelPlan/useTravelPlan";
 import DestinationCard from "../../components/destination/DestinationCard";
-import { HiArrowLeft, HiOutlineTrash } from "react-icons/hi";
+import { HiArrowLeft, HiOutlineCalendar, HiOutlineTrash } from "react-icons/hi";
 import { FiEdit2 } from "react-icons/fi";
 import { useState } from "react";
 import ConfirmationModal from "../../components/confirmation/ConfirmationModal";
@@ -187,22 +187,22 @@ export default function TravelPlanDetailsPage() {
                             Destinations
                         </h2>
 
-                        <button
-                            onClick={() =>
-                                navigate(`/plans/${plan.id}/destinations/create`)
-                            }
-                            className="
-                                px-5
-                                py-3
-                                rounded-xl
-                                bg-amber-500
-                                text-white
-                                hover:bg-amber-600
-                            "
-                        >
-                            + Add Destination
-                        </button>
+                        <div className="flex flex-wrap gap-3 mb-6">
+                            <button
+                                onClick={() => navigate(`/plans/${plan.id}/destinations/create`)}
+                                className="flex items-center gap-2 px-5 py-3 rounded-xl bg-amber-500 text-white font-medium hover:bg-amber-600 transition shadow-sm"
+                            >
+                                <span>+ Add Destination</span>
+                            </button>
 
+                            <button
+                                onClick={() => navigate(`/plans/${plan.id}/calendar`)}
+                                className="flex items-center gap-2 px-5 py-3 rounded-xl bg-white border border-stone-200 text-stone-700 font-medium hover:bg-stone-50 hover:border-stone-300 transition shadow-sm"
+                            >
+                                <HiOutlineCalendar size={20} className="text-amber-500" />
+                                <span>Calendar view</span>
+                            </button>
+                        </div>
                     </div>
 
                     {plan.destinations.length === 0 ? (

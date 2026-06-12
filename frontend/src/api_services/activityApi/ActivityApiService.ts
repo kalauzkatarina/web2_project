@@ -43,6 +43,18 @@ export const activityService: IActivityApiService = {
         return res.data;
     },
 
+    async getByPlan(
+        planId: string
+    ): Promise<ActivityDto[]> {
+
+        const res =
+            await api.get<ActivityDto[]>(
+                `/activity/plan/${planId}`
+            );
+
+        return res.data;
+    },
+
     async create(
         data: CreateActivityDto
     ): Promise<ActivityDto> {

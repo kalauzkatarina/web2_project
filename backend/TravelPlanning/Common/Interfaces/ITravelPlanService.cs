@@ -30,6 +30,7 @@ namespace Common.Interfaces
         Task<Result<List<ActivityDto>>> GetActivitiesByDestinationAsync(Guid destinationId, Guid userId);
         Task<Result<List<ActivityDto>>> GetActivitiesByDateAsync(Guid planId, Guid userId, DateTime date);
         Task<Result<ActivityDto>> GetActivityByIdAsync(Guid activityId, Guid userId);
+        Task<Result<List<ActivityDto>>> GetActivitiesByPlanAsync(Guid planId, Guid userId);
         Task<Result<bool>> UpdateActivityAsync(Guid activityId, Guid userId, UpdateActivityDto dto);
         Task<Result<bool>> DeleteActivityAsync(Guid activityId, Guid userId);
 
