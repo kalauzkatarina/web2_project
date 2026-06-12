@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -20,6 +20,13 @@ export default function ActivityCalendarPage() {
     const { activities, loading, } = useActivitiesByDate(id, dateString);
     const { activities: allActivities, } = useActivitiesByPlan(id);
     const activityDates = new Set(allActivities.map(a => a.date.split("T")[0]));
+
+    //ovo da otvori kalendar gde pocinje travelPlan
+    useEffect(() => {
+        if (plan?.startDate) {
+            setSelectedDate(new Date(plan.startDate));
+        }
+    }, [plan]);
 
     return (
         <div className="min-h-screen bg-[#fafaf9]">
