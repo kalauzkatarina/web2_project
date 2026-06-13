@@ -83,20 +83,25 @@ namespace TravelPlanService.Services
             return Result<ShareTokenDto>.Success(ShareTokenMapper.ToDto(created));
         }
 
-        public async Task<Result<TravelPlanDto>> GetPlanByTokenAsync(string token)
+        public async Task<Result<SharedTravelPlanDto>> GetPlanByTokenAsync(string token)
         {
             var shareToken = await _shareTokenRepository.GetByTokenAsync(token);
             if (shareToken == null)
-                return Result<TravelPlanDto>.Failure("Invalid or expired token.");
+                return Result<SharedTravelPlanDto>.Failure("Invalid or expired token.");
 
             if (shareToken.ExpiresAt.HasValue && shareToken.ExpiresAt < DateTime.Now)
-                return Result<TravelPlanDto>.Failure("Share token has expired.");
+                return Result<SharedTravelPlanDto>.Failure("Share token has expired.");
 
             var plan = await _travelPlanRepository.GetByIdAsync(shareToken.PlanId);
             if (plan == null)
-                return Result<TravelPlanDto>.Failure("Travel plan not found.");
+                return Result<SharedTravelPlanDto>.Failure("Travel plan not found.");
 
-            return Result<TravelPlanDto>.Success(TravelPlanMapper.ToDto(plan));
+            return Result<SharedTravelPlanDto>.Success(
+                   new SharedTravelPlanDto
+                   {
+                       Plan = TravelPlanMapper.ToDto(plan),
+                       AccessType = shareToken.AccessType
+                   });
         }
     }
 }

@@ -44,6 +44,17 @@ namespace Web_Api.Controllers.Plan
             return BadRequest(new {Message = result.ErrorMessage});
         }
 
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllPlansAdmin()
+        {
+            var role = ClaimsPrincipalHelper.GetUserRole(User);
+            var result = await _travelPlanService.GetAllAsync(role);
+
+            if (result.IsSuccess) return Ok(result.Data);
+            return BadRequest(new { Message = result.ErrorMessage });
+        }
+
+
         [HttpGet("{planId}")]
         public async Task<IActionResult> GetPlanById(string planId)
         {
@@ -54,8 +65,9 @@ namespace Web_Api.Controllers.Plan
             if (userId == Guid.Empty)
                 return Unauthorized(new { Message = "Invalid token." });
 
+            var role = ClaimsPrincipalHelper.GetUserRole(User);
 
-            var result = await _travelPlanService.GetPlanByIdAsync(outId, userId);
+            var result = await _travelPlanService.GetPlanByIdAsync(outId, userId, role);
             if(result.IsSuccess)
                 return Ok(result.Data);
 
@@ -72,7 +84,9 @@ namespace Web_Api.Controllers.Plan
             if (userId == Guid.Empty)
                 return Unauthorized(new { Message = "Invalid token." });
 
-            var result = await _travelPlanService.UpdatePlanAsync(outId, userId, dto);
+            var role = ClaimsPrincipalHelper.GetUserRole(User);
+
+            var result = await _travelPlanService.UpdatePlanAsync(outId, userId, dto, role);
             if (result.IsSuccess)
                 return Ok(new { Message = "Travel plan updated successfully." });
 
@@ -89,7 +103,9 @@ namespace Web_Api.Controllers.Plan
             if (userId == Guid.Empty)
                 return Unauthorized(new { Message = "Invalid token." });
 
-            var result = await _travelPlanService.DeletePlanAsync(outId, userId);
+            var role = ClaimsPrincipalHelper.GetUserRole(User);
+
+            var result = await _travelPlanService.DeletePlanAsync(outId, userId, role);
             if (result.IsSuccess)
                 return Ok(new { Message = "Travel plan deleted successfully." });
 

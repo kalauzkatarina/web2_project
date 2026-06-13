@@ -12,8 +12,9 @@ namespace TravelPlanService.Interfaces
     {
         Task<Result<TravelPlanDto>> CreateAsync(Guid userId, CreateTravelPlanDto dto);
         Task<Result<List<TravelPlanDto>>> GetAllByUserAsync(Guid userId);
-        Task<Result<TravelPlanDto>> GetByIdAsync(Guid planId, Guid userId);
-        Task<Result<bool>> UpdateAsync(Guid planId, Guid userId, UpdateTravelPlanDto dto);
-        Task<Result<bool>> DeleteAsync(Guid planId, Guid userId);
+        Task<Result<List<TravelPlanDto>>> GetAllAsync(string role);
+        Task<Result<TravelPlanDto>> GetByIdAsync(Guid planId, Guid userId, string role);
+        Task<Result<bool>> UpdateAsync(Guid planId, Guid userId, UpdateTravelPlanDto dto, string role);
+        Task<Result<bool>> DeleteAsync(Guid planId, Guid userId, string role);
     }
 }

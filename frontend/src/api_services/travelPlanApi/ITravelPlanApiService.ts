@@ -4,15 +4,9 @@ import type { UpdateTravelPlanDto } from "../../models/travelPlans/UpdateTravelP
 
 export interface ITravelPlanApiService {
     getAll(): Promise<TravelPlanDto[]>;
-
+    getAllAdmin(): Promise<TravelPlanDto[]>;
     getById(id: string): Promise<TravelPlanDto>;
-
     create(data: CreateTravelPlanDto): Promise<TravelPlanDto>;
-
-    update(
-        id: string,
-        data: UpdateTravelPlanDto
-    ): Promise<void>;
-
+    update(id: string, data: UpdateTravelPlanDto): Promise<void>;
     delete(id: string): Promise<void>;
 }

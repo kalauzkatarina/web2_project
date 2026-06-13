@@ -1,11 +1,12 @@
-import { FiEdit2 } from "react-icons/fi";
+import { FiEdit2, FiShare2 } from "react-icons/fi";
 import { HiOutlineTrash } from "react-icons/hi";
 import type { TravelPlanHeaderProps } from "../../types/props/travelPlan/TravelPlanHeaderProps";
 
 export default function TravelPlanHeader({
     plan,
     onEdit,
-    onDelete
+    onDelete,
+    onShare
 }: TravelPlanHeaderProps) {
     return (
         <div
@@ -36,6 +37,26 @@ export default function TravelPlanHeader({
                 </h1>
 
                 <div className="flex gap-2">
+                    <button
+                        title="Share Journey"
+                        onClick={onShare}
+                        className="
+                            p-3
+                            rounded-2xl
+                            bg-white
+                            border
+                            border-stone-200
+                            text-stone-500
+                            shadow-sm
+                            hover:text-blue-500
+                            hover:border-blue-300
+                            hover:shadow
+                            transition
+                        "
+                    >
+                        <FiShare2 size={18} />
+                    </button>
+
                     <button
                         title="Edit Journey"
                         onClick={onEdit}

@@ -74,31 +74,40 @@ namespace TravelPlanService
             }
         }
 
-        public async Task<Result<TravelPlanDto>> GetPlanByIdAsync(Guid planId, Guid userId)
+        public async Task<Result<List<TravelPlanDto>>> GetAllAsync(string role)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
                 var travelPlanService = scope.ServiceProvider.GetRequiredService<IPlanService>();
-                return await travelPlanService.GetByIdAsync(planId, userId);
+                return await travelPlanService.GetAllAsync(role);
             }
         }
 
-        public async Task<Result<bool>> UpdatePlanAsync(Guid planId, Guid userId, UpdateTravelPlanDto dto)
+        public async Task<Result<TravelPlanDto>> GetPlanByIdAsync(Guid planId, Guid userId, string role)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
                 var travelPlanService = scope.ServiceProvider.GetRequiredService<IPlanService>();
-                return await travelPlanService.UpdateAsync(planId, userId, dto);
+                return await travelPlanService.GetByIdAsync(planId, userId, role);
             }
         }
 
-        public async Task<Result<bool>> DeletePlanAsync(Guid planId, Guid userId)
+        public async Task<Result<bool>> UpdatePlanAsync(Guid planId, Guid userId, UpdateTravelPlanDto dto, string role)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var travelPlanService = scope.ServiceProvider.GetRequiredService<IPlanService>();
+                return await travelPlanService.UpdateAsync(planId, userId, dto, role);
+            }
+        }
+
+        public async Task<Result<bool>> DeletePlanAsync(Guid planId, Guid userId, string role)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
                 var travelPlanService = scope.ServiceProvider.GetRequiredService<IPlanService>();
 
-                var result = await travelPlanService.DeleteAsync(planId, userId);
+                var result = await travelPlanService.DeleteAsync(planId, userId, role);
 
                 if (result.IsSuccess)
                 {
@@ -152,21 +161,21 @@ namespace TravelPlanService
             }
         }
 
-        public async Task<Result<bool>> UpdateDestinationAsync(Guid destinationId, Guid userId, UpdateDestionationDto dto)
+        public async Task<Result<bool>> UpdateDestinationAsync(Guid destinationId, Guid userId, UpdateDestionationDto dto, string role)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
                 var destinationService = scope.ServiceProvider.GetRequiredService<IDestinationService>();
-                return await destinationService.UpdateAsync(destinationId, userId, dto);
+                return await destinationService.UpdateAsync(destinationId, userId, dto, role);
             }
         }
 
-        public async Task<Result<bool>> DeleteDestinationAsync(Guid destinationId, Guid userId)
+        public async Task<Result<bool>> DeleteDestinationAsync(Guid destinationId, Guid userId, string role)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
                 var destinationService = scope.ServiceProvider.GetRequiredService<IDestinationService>();
-                return await destinationService.DeleteAsync(destinationId, userId);
+                return await destinationService.DeleteAsync(destinationId, userId, role);
             }
         }
 
@@ -217,21 +226,21 @@ namespace TravelPlanService
                 return await activityService.GetByPlanAsync(planId, userId);
             }
         }
-        public async Task<Result<bool>> UpdateActivityAsync(Guid activityId, Guid userId, UpdateActivityDto dto)
+        public async Task<Result<bool>> UpdateActivityAsync(Guid activityId, Guid userId, UpdateActivityDto dto, string role)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
                 var activityService = scope.ServiceProvider.GetRequiredService<IActivityService>();
-                return await activityService.UpdateAsync(activityId, userId, dto);
+                return await activityService.UpdateAsync(activityId, userId, dto, role);
             }
         }
 
-        public async Task<Result<bool>> DeleteActivityAsync(Guid activityId, Guid userId)
+        public async Task<Result<bool>> DeleteActivityAsync(Guid activityId, Guid userId, string role)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
                 var activityService = scope.ServiceProvider.GetRequiredService<IActivityService>();
-                return await activityService.DeleteAsync(activityId, userId);
+                return await activityService.DeleteAsync(activityId, userId, role);
             }
         }
 
@@ -258,7 +267,7 @@ namespace TravelPlanService
             }
         }
 
-        public async Task<Result<TravelPlanDto>> GetPlanByShareTokenAsync(string token)
+        public async Task<Result<SharedTravelPlanDto>> GetPlanByShareTokenAsync(string token)
         {
             using (var scope = _serviceProvider.CreateScope())
             {

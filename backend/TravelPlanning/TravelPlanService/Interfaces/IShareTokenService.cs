@@ -12,6 +12,6 @@ namespace TravelPlanService.Interfaces
     {
         Task<Result<ShareTokenDto>> CreateAsync(Guid userId, CreateShareTokenDto dto);
         Task<Result<ShareTokenDto>> CreateAndSendAsync(Guid userId, CreateShareTokenDto dto, string toEmail);
-        Task<Result<TravelPlanDto>> GetPlanByTokenAsync(string token);
+        Task<Result<SharedTravelPlanDto>> GetPlanByTokenAsync(string token);
     }
 }

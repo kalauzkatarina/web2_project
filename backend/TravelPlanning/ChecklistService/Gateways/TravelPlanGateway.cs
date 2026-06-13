@@ -13,12 +13,12 @@ namespace ChecklistService.Gateways
 {
     public class TravelPlanGateway : ITravelPlanGateway
     {
-        public async Task<Result<TravelPlanDto>> GetPlanAsync(Guid planId, Guid userId)
+        public async Task<Result<TravelPlanDto>> GetPlanAsync(Guid planId, Guid userId, string role)
         {
             var proxy = ServiceProxy.Create<ITravelPlanService>(
                         new Uri("fabric:/TravelPlanning/TravelPlanService"));
 
-            return await proxy.GetPlanByIdAsync(planId, userId);
+            return await proxy.GetPlanByIdAsync(planId, userId, role);
         }
     }
 }

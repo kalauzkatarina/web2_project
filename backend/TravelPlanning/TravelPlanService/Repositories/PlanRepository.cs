@@ -44,6 +44,14 @@ namespace TravelPlanService.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<TravelPlan>> GetAllAsync()
+        {
+            return await _context.TravelPlans
+                .Include(tp => tp.Destinations)
+                    .ThenInclude(d => d.Activities)
+                .ToListAsync();
+        }
+
         public async Task<TravelPlan?> GetByIdAsync(Guid planId)
         {
             return await _context.TravelPlans

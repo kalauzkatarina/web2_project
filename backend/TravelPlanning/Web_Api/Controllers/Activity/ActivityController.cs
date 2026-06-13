@@ -115,7 +115,9 @@ namespace Web_Api.Controllers.Activity
             if (userId == Guid.Empty)
                 return Unauthorized(new { Message = "Invalid token." });
 
-            var result = await _travelPlanService.UpdateActivityAsync(activityId, userId, dto);
+            var role = ClaimsPrincipalHelper.GetUserRole(User);
+
+            var result = await _travelPlanService.UpdateActivityAsync(activityId, userId, dto, role);
             if (result.IsSuccess)
                 return Ok(new { Message = "Activity updated successfully." });
 
@@ -132,7 +134,9 @@ namespace Web_Api.Controllers.Activity
             if (userId == Guid.Empty)
                 return Unauthorized(new { Message = "Invalid token." });
 
-            var result = await _travelPlanService.DeleteActivityAsync(activityId, userId);
+            var role = ClaimsPrincipalHelper.GetUserRole(User);
+
+            var result = await _travelPlanService.DeleteActivityAsync(activityId, userId, role);
             if (result.IsSuccess)
                 return Ok(new { Message = "Activity deleted successfully." });
 

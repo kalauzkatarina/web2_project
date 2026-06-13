@@ -41,7 +41,9 @@ namespace Web_Api.Controllers.Finance
             var userId = ClaimsPrincipalHelper.GetUserId(User);
             if (userId == Guid.Empty) return Unauthorized();
 
-            var result = await _financeService.GetBudgetSummaryAsync(planId, userId);
+            var role = ClaimsPrincipalHelper.GetUserRole(User);
+
+            var result = await _financeService.GetBudgetSummaryAsync(planId, userId, role);
 
             return result.IsSuccess 
                 ? Ok(result.Data) 

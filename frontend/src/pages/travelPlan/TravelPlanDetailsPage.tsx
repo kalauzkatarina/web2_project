@@ -10,9 +10,11 @@ import TravelPlanHeader from "../../components/travelPlan/TravelPlanHeader";
 import TravelPlanDestinationsSection from "../../components/travelPlan/TravelPlanDestinationSection";
 import FinanceSection from "../../components/finance/FinanceSection";
 import { useTravelPlanActions } from "../../hooks/travelPlan/useTravelPlanActions";
+import SharePlanModal from "../../components/sharePlan/SharePlanModal";
 
 export default function TravelPlanDetailsPage() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showShareModal, setShowShareModal] = useState(false);
 
     const { id } = useParams();
     const { plan, setPlan, loading } = useTravelPlan(id);
@@ -74,6 +76,7 @@ export default function TravelPlanDetailsPage() {
                     plan={plan}
                     onEdit={() => navigate(`/plans/${plan.id}/edit`)}
                     onDelete={() => setShowDeleteModal(true)}
+                    onShare={() => setShowShareModal(true)}
                 />
 
                 <TravelPlanDestinationsSection
@@ -131,6 +134,12 @@ export default function TravelPlanDetailsPage() {
                 message="Are you sure you want to delete this activity?"
                 onCancel={() => setDeleteState(s => ({ ...s, activityId: null }))}
                 onConfirm={() => handlers.deleteActivity(deleteState.activityId!)}
+            />
+
+            <SharePlanModal
+                isOpen={showShareModal}
+                planId={plan.id}
+                onClose={() => setShowShareModal(false)}
             />
         </div>
     );

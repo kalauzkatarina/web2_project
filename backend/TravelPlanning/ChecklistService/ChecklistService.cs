@@ -45,12 +45,12 @@ namespace ChecklistService
             _serviceProvider = services.BuildServiceProvider();
         }
 
-        public async Task<Result<ChecklistItemDto>> AddItemAsync(Guid userId, AddChecklistItemDto dto)
+        public async Task<Result<ChecklistItemDto>> AddItemAsync(Guid userId, AddChecklistItemDto dto, string role)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
                 var service = scope.ServiceProvider.GetRequiredService<IChecklistDomainService>();
-                return await service.AddItemAsync(userId, dto);
+                return await service.AddItemAsync(userId, dto, role);
             }
         }
 
@@ -63,39 +63,39 @@ namespace ChecklistService
             }
         }
 
-        public async Task<Result<bool>> DeleteItemAsync(Guid itemId, Guid userId)
+        public async Task<Result<bool>> DeleteItemAsync(Guid itemId, Guid userId, string role)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
                 var service = scope.ServiceProvider.GetRequiredService<IChecklistDomainService>();
-                return await service.DeleteItemAsync(itemId, userId);
+                return await service.DeleteItemAsync(itemId, userId, role);
             }
         }
 
-        public async Task<Result<List<ChecklistItemDto>>> GetByPlanAsync(Guid planId, Guid userId)
+        public async Task<Result<List<ChecklistItemDto>>> GetByPlanAsync(Guid planId, Guid userId, string role)
         {
             using(var scope = _serviceProvider.CreateScope())
             {
                 var service = scope.ServiceProvider.GetRequiredService<IChecklistDomainService>();
-                return await service.GetByPlanAsync(planId, userId);
+                return await service.GetByPlanAsync(planId, userId, role);
             }
         }
 
-        public async Task<Result<ChecklistItemDto>> ToggleItemAsync(Guid itemId, Guid userId)
+        public async Task<Result<ChecklistItemDto>> ToggleItemAsync(Guid itemId, Guid userId, string role)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
                 var service = scope.ServiceProvider.GetRequiredService<IChecklistDomainService>();
-                return await service.ToggleItemAsync(itemId, userId);
+                return await service.ToggleItemAsync(itemId, userId, role);
             }
         }
 
-        public async Task<Result<bool>> UpdateItemAsync(Guid itemId, Guid userId, UpdateChecklistItemDto dto)
+        public async Task<Result<bool>> UpdateItemAsync(Guid itemId, Guid userId, UpdateChecklistItemDto dto, string role)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
                 var service = scope.ServiceProvider.GetRequiredService<IChecklistDomainService>();
-                return await service.UpdateItemAsync(itemId, userId, dto);
+                return await service.UpdateItemAsync(itemId, userId, dto, role);
             }
         }
 

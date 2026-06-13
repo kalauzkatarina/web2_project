@@ -17,7 +17,7 @@ namespace Common.Interfaces
         Task<Result<List<ExpenseDto>>> GetExpensesByPlanAsync(Guid planId, Guid userId);
         Task<Result<bool>> UpdateExpenseAsync(Guid expenseId, Guid userId, UpdateExpenseDto dto);
         Task<Result<bool>> DeleteExpenseAsync(Guid expenseId, Guid userId);
-        Task<Result<BudgetSummaryDto>> GetBudgetSummaryAsync(Guid planId, Guid userId);
+        Task<Result<BudgetSummaryDto>> GetBudgetSummaryAsync(Guid planId, Guid userId, string role);
         Task<Result<bool>> DeleteExpensesByPlanAsync(Guid planId); // kaskadno brisanje
         Task<Result<bool>> SyncActivityCostAsync(Guid userId, Guid planId, Guid activityId, double newTotalAmount, string title, string operation, ExpenseCategory category);
     }

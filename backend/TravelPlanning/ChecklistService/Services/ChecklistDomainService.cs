@@ -25,9 +25,9 @@ namespace ChecklistService.Services
             _travelPlanGateway = travelPlanGateway;
         }
 
-        public async Task<Result<ChecklistItemDto>> AddItemAsync(Guid userId, AddChecklistItemDto dto)
+        public async Task<Result<ChecklistItemDto>> AddItemAsync(Guid userId, AddChecklistItemDto dto, string role)
         {
-            var planResult = await _travelPlanGateway.GetPlanAsync(dto.PlanId, userId);
+            var planResult = await _travelPlanGateway.GetPlanAsync(dto.PlanId, userId, role);
             if (!planResult.IsSuccess)
                 return Result<ChecklistItemDto>.Failure(planResult.ErrorMessage);
 
@@ -51,13 +51,13 @@ namespace ChecklistService.Services
                 : Result<bool>.Failure("Failed to delete checklist items for the given plan.");
         }
 
-        public async Task<Result<bool>> DeleteItemAsync(Guid itemId, Guid userId)
+        public async Task<Result<bool>> DeleteItemAsync(Guid itemId, Guid userId, string role)
         {
             var item = await _repository.GetByIdAsync(itemId);
             if (item == null)
                 return Result<bool>.Failure("Checklist item not found.");
 
-            var planResult = await _travelPlanGateway.GetPlanAsync(item.PlanId, userId);
+            var planResult = await _travelPlanGateway.GetPlanAsync(item.PlanId, userId, role);
             if (!planResult.IsSuccess)
                 return Result<bool>.Failure(planResult.ErrorMessage);
 
@@ -68,9 +68,9 @@ namespace ChecklistService.Services
 
         }
 
-        public async Task<Result<List<ChecklistItemDto>>> GetByPlanAsync(Guid planId, Guid userId)
+        public async Task<Result<List<ChecklistItemDto>>> GetByPlanAsync(Guid planId, Guid userId, string role)
         {
-            var planResult = await _travelPlanGateway.GetPlanAsync(planId, userId);
+            var planResult = await _travelPlanGateway.GetPlanAsync(planId, userId, role);
             if (!planResult.IsSuccess)
                 return Result<List<ChecklistItemDto>>.Failure(planResult.ErrorMessage);
 
@@ -80,13 +80,13 @@ namespace ChecklistService.Services
 
         }
 
-        public async Task<Result<ChecklistItemDto>> ToggleItemAsync(Guid itemId, Guid userId)
+        public async Task<Result<ChecklistItemDto>> ToggleItemAsync(Guid itemId, Guid userId, string role)
         {
             var item = await _repository.GetByIdAsync(itemId);
             if (item == null)
                 return Result<ChecklistItemDto>.Failure("Checklist item not found.");
 
-            var planResult = await _travelPlanGateway.GetPlanAsync(item.PlanId, userId);
+            var planResult = await _travelPlanGateway.GetPlanAsync(item.PlanId, userId, role);
             if (!planResult.IsSuccess)
                 return Result<ChecklistItemDto>.Failure(planResult.ErrorMessage);
 
@@ -96,13 +96,13 @@ namespace ChecklistService.Services
             return Result<ChecklistItemDto>.Success(ChecklistMapper.ToDto(updated));
         }
 
-        public async Task<Result<bool>> UpdateItemAsync(Guid itemId, Guid userId, UpdateChecklistItemDto dto)
+        public async Task<Result<bool>> UpdateItemAsync(Guid itemId, Guid userId, UpdateChecklistItemDto dto, string role)
         {
             var item = await _repository.GetByIdAsync(itemId);
             if (item == null)
                 return Result<bool>.Failure("Checklist item not found.");
 
-            var planResult = await _travelPlanGateway.GetPlanAsync(item.PlanId, userId);
+            var planResult = await _travelPlanGateway.GetPlanAsync(item.PlanId, userId, role);
             if (!planResult.IsSuccess)
                 return Result<bool>.Failure(planResult.ErrorMessage);
 

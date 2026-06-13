@@ -173,6 +173,7 @@
     <Compile Include="DTOs\travelPlan\CreateShareTokenDto.cs" />
     <Compile Include="DTOs\travelPlan\CreateTravelPlanDto.cs" />
     <Compile Include="DTOs\travelPlan\DestinationDto.cs" />
+    <Compile Include="DTOs\travelPlan\SharedTravelPlanDto.cs" />
     <Compile Include="DTOs\travelPlan\ShareTokenDto.cs" />
     <Compile Include="DTOs\travelPlan\TravelPlanDto.cs" />
     <Compile Include="DTOs\travelPlan\UpdateActivityDto.cs" />

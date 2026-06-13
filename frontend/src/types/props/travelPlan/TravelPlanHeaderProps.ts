@@ -4,4 +4,5 @@ export type TravelPlanHeaderProps = {
     plan: TravelPlanDto;
     onEdit: () => void;
     onDelete: () => void;
+    onShare: () => void;
 }

@@ -70,3 +70,8 @@ select.form-input {
   font-size: 1.2rem;
   color: #57534e;
 }
+
+/*ovo uvek omogucava da bude sa strane mesta za scrool bar i da ne pomera ekran levo desno*/
+html {
+    scrollbar-gutter: stable;
+}

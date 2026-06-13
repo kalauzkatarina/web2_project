@@ -84,7 +84,7 @@ namespace TravelPlanService.Services
             return Result<ActivityDto>.Success(ActivityMapper.ToDto(created));
         }
 
-        public async Task<Result<bool>> DeleteAsync(Guid activityId, Guid userId)
+        public async Task<Result<bool>> DeleteAsync(Guid activityId, Guid userId, string role)
         {
             var activity = await _activityRepository.GetByIdAsync(activityId);
             if (activity == null)
@@ -95,7 +95,7 @@ namespace TravelPlanService.Services
                 return Result<bool>.Failure("Destination not found.");
 
             var plan = await _travelPlanRepository.GetByIdAsync(destination.TravelPlanId);
-            if (plan == null || plan.UserId != userId)
+            if (plan == null || (plan.UserId != userId && role != "Admin"))
                 return Result<bool>.Failure("You are not authorized to delete this activity.");
 
             var success = await _activityRepository.DeleteAsync(activityId);
@@ -169,7 +169,7 @@ namespace TravelPlanService.Services
             return Result<List<ActivityDto>>.Success(activities.Select(ActivityMapper.ToDto).ToList());
         }
 
-        public async Task<Result<bool>> UpdateAsync(Guid activityId, Guid userId, UpdateActivityDto dto)
+        public async Task<Result<bool>> UpdateAsync(Guid activityId, Guid userId, UpdateActivityDto dto, string role)
         {
             var activity = await _activityRepository.GetByIdAsync(activityId);
             if (activity == null)
@@ -177,7 +177,7 @@ namespace TravelPlanService.Services
 
             var destination = await _destinationRepository.GetByIdAsync(activity.DestinationId);
             var plan = await _travelPlanRepository.GetByIdAsync(destination.TravelPlanId);
-            if (plan == null || plan.UserId != userId)
+            if (plan == null || (plan.UserId != userId && role != "Admin"))
                 return Result<bool>.Failure("You are not authorized to delete this activity.");
 
             double oldCost = activity.EstimatedCost;

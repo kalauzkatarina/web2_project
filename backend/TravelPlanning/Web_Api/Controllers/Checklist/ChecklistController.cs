@@ -26,7 +26,9 @@ namespace Web_Api.Controllers.Checklist
             if (userId == Guid.Empty)
                 return Unauthorized(new { Message = "Invalid token." });
 
-            var result = await _checklistService.AddItemAsync(userId, dto);
+            var role = ClaimsPrincipalHelper.GetUserRole(User);
+
+            var result = await _checklistService.AddItemAsync(userId, dto, role);
             return result.IsSuccess 
                 ? Ok(result.Data)
                 : BadRequest(new { Message = result.ErrorMessage });
@@ -38,7 +40,9 @@ namespace Web_Api.Controllers.Checklist
             var userId = ClaimsPrincipalHelper.GetUserId(User);
             if (userId == Guid.Empty) return Unauthorized(new { Message = "Invalid token." });
 
-            var result = await _checklistService.GetByPlanAsync(planId, userId);
+            var role = ClaimsPrincipalHelper.GetUserRole(User);
+
+            var result = await _checklistService.GetByPlanAsync(planId, userId, role);
             return result.IsSuccess 
                 ? Ok(result.Data) 
                 : BadRequest(new { Message = result.ErrorMessage });
@@ -50,7 +54,9 @@ namespace Web_Api.Controllers.Checklist
             var userId = ClaimsPrincipalHelper.GetUserId(User);
             if (userId == Guid.Empty) return Unauthorized(new { Message = "Invalid token." });
 
-            var result = await _checklistService.UpdateItemAsync(itemId, userId, dto);
+            var role = ClaimsPrincipalHelper.GetUserRole(User);
+
+            var result = await _checklistService.UpdateItemAsync(itemId, userId, dto, role);
             return result.IsSuccess 
                 ? Ok(new { Message = "Item updated successfully." }) 
                 : BadRequest(new { Message = result.ErrorMessage });
@@ -62,7 +68,9 @@ namespace Web_Api.Controllers.Checklist
             var userId = ClaimsPrincipalHelper.GetUserId(User);
             if (userId == Guid.Empty) return Unauthorized(new { Message = "Invalid token." });
 
-            var result = await _checklistService.ToggleItemAsync(itemId, userId);
+            var role = ClaimsPrincipalHelper.GetUserRole(User);
+
+            var result = await _checklistService.ToggleItemAsync(itemId, userId, role);
             return result.IsSuccess 
                 ? Ok(result.Data) 
                 : BadRequest(new { Message = result.ErrorMessage });
@@ -74,7 +82,9 @@ namespace Web_Api.Controllers.Checklist
             var userId = ClaimsPrincipalHelper.GetUserId(User);
             if (userId == Guid.Empty) return Unauthorized(new { Message = "Invalid token." });
 
-            var result = await _checklistService.DeleteItemAsync(itemId, userId);
+            var role = ClaimsPrincipalHelper.GetUserRole(User);
+
+            var result = await _checklistService.DeleteItemAsync(itemId, userId, role);
             return result.IsSuccess 
                 ? Ok(new { Message = "Item deleted successfully." }) 
                 : BadRequest(new { Message = result.ErrorMessage });

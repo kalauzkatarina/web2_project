@@ -29,17 +29,14 @@ export default function Navbar() {
                         Travel Planner
                     </Link>
 
-                    <Link
-                        to="/"
-                        className="text-stone-600 hover:text-amber-600"
-                    >
-                        My Journeys
+                    <Link to="/" className="text-stone-600 hover:text-amber-600 font-medium">
+                        {user?.role === "Admin" ? "Admin Dashboard" : "My Journeys"}
                     </Link>
 
                     {user?.role === "Admin" && (
                         <Link
                             to="/users"
-                            className="text-stone-600 hover:text-amber-600"
+                            className="text-stone-600 hover:text-amber-600 font-medium"
                         >
                             Users
                         </Link>

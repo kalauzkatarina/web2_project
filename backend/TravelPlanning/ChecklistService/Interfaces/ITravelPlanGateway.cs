@@ -10,6 +10,6 @@ namespace ChecklistService.Interfaces
 {
     public interface ITravelPlanGateway
     {
-        Task<Result<TravelPlanDto>> GetPlanAsync(Guid planId, Guid userId);
+        Task<Result<TravelPlanDto>> GetPlanAsync(Guid planId, Guid userId, string role);
     }
 }

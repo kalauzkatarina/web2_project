@@ -11,6 +11,7 @@ namespace TravelPlanService.Interfaces
     {
         Task<TravelPlan> CreateAsync(TravelPlan travelPlan);
         Task<List<TravelPlan>> GetAllByUserIdAsync(Guid userId);
+        Task<List<TravelPlan>> GetAllAsync();
         Task<TravelPlan?> GetByIdAsync(Guid planId);
         Task<TravelPlan?> GetByShareTokenAsync(string token);
         Task<bool> UpdateAsync(TravelPlan plan);

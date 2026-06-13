@@ -56,9 +56,9 @@ export default function DestinationCard({
 
                 <div className="flex gap-2">
 
-                    <button
+                    {onEdit && <button
                         title="Edit Destination"
-                        onClick={() => onEdit(destination.id)}
+                        onClick={() => onEdit?.(destination.id)}
                         className="
                             p-3
                             rounded-2xl
@@ -75,26 +75,29 @@ export default function DestinationCard({
                     >
                         <FiEdit2 size={18} />
                     </button>
+                    }
 
-                    <button
-                        title="Delete Destination"
-                        onClick={() => onDelete(destination.id)}
-                        className="
-                            p-3
-                            rounded-2xl
-                            bg-white
-                            border
-                            border-stone-200
-                            text-stone-500
-                            shadow-sm
-                            hover:text-red-500
-                            hover:border-red-300
-                            hover:shadow
-                            transition
-                        "
-                    >
-                        <HiOutlineTrash size={18} />
-                    </button>
+                    {onDelete &&
+                        <button
+                            title="Delete Destination"
+                            onClick={() => onDelete?.(destination.id)}
+                            className="
+                                p-3
+                                rounded-2xl
+                                bg-white
+                                border
+                                border-stone-200
+                                text-stone-500
+                                shadow-sm
+                                hover:text-red-500
+                                hover:border-red-300
+                                hover:shadow
+                                transition
+                                "
+                        >
+                            <HiOutlineTrash size={18} />
+                        </button>
+                    }
 
                 </div>
 
@@ -123,12 +126,14 @@ export default function DestinationCard({
             <div className="flex items-center justify-between mb-4">
                 <h4 className="font-bold text-stone-900">Activities</h4>
 
-               <button
-                    onClick={() => navigate(`/destinations/${destination.id}/activities/create`)}
-                    className="px-5 py-3 rounded-xl bg-amber-500 text-white font-semibold hover:bg-amber-600 transition shadow-sm"
-                >
-                    + Add Activity
-                </button>
+                {onActivityEdit &&
+                    <button
+                        onClick={() => navigate(`/destinations/${destination.id}/activities/create`)}
+                        className="px-5 py-3 rounded-xl bg-amber-500 text-white font-semibold hover:bg-amber-600 transition shadow-sm"
+                    >
+                        + Add Activity
+                    </button>
+                }
             </div>
 
             {destination.activities.length > 0 ? (

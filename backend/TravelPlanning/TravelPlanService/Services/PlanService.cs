@@ -42,13 +42,13 @@ namespace TravelPlanService.Services
             return Result<TravelPlanDto>.Success(TravelPlanMapper.ToDto(created));
         }
 
-        public async Task<Result<bool>> DeleteAsync(Guid planId, Guid userId)
+        public async Task<Result<bool>> DeleteAsync(Guid planId, Guid userId, string role)
         {
             var plan = await _travelPlanRepository.GetByIdAsync(planId);
             if (plan == null)
                 return Result<bool>.Failure("Travel plan not found.");
 
-            if (plan.UserId != userId)
+            if (plan.UserId != userId && role != "Admin")
                 return Result<bool>.Failure("You are not authorized to update this plan.");
 
             var success = await _travelPlanRepository.DeleteAsync(planId);
@@ -66,25 +66,34 @@ namespace TravelPlanService.Services
             return Result<List<TravelPlanDto>>.Success(dtos);
         }
 
-        public async Task<Result<TravelPlanDto>> GetByIdAsync(Guid planId, Guid userId)
+        public async Task<Result<List<TravelPlanDto>>> GetAllAsync(string role)
+        {
+            if (role != "Admin")
+                return Result<List<TravelPlanDto>>.Failure("Access denied.");
+
+            var plans = await _travelPlanRepository.GetAllAsync();
+            return Result<List<TravelPlanDto>>.Success(plans.Select(p => TravelPlanMapper.ToDto(p)).ToList());
+        }
+
+        public async Task<Result<TravelPlanDto>> GetByIdAsync(Guid planId, Guid userId, string role)
         {
             var plan = await _travelPlanRepository.GetByIdAsync(planId);
             if (plan == null)
                 return Result<TravelPlanDto>.Failure("Travel plan not found.");
 
-            if (plan.UserId != userId)
+            if (plan.UserId != userId && role != "Admin")
                 return Result<TravelPlanDto>.Failure("You are not authorized to access this plan.");
 
             return Result<TravelPlanDto>.Success(TravelPlanMapper.ToDto(plan));
         }
 
-        public async Task<Result<bool>> UpdateAsync(Guid planId, Guid userId, UpdateTravelPlanDto dto)
+        public async Task<Result<bool>> UpdateAsync(Guid planId, Guid userId, UpdateTravelPlanDto dto, string role)
         {
             var plan = await _travelPlanRepository.GetByIdAsync(planId);
             if (plan == null)
                 return Result<bool>.Failure("Travel plan not found.");
 
-            if (plan.UserId != userId)
+            if (plan.UserId != userId && role != "Admin")
                 return Result<bool>.Failure("You are not authorized to update this plan.");
 
             if (dto.EndDate < dto.StartDate)

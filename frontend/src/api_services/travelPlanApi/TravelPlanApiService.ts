@@ -11,6 +11,11 @@ export const travelPlanService: ITravelPlanApiService = {
         return res.data;
     },
 
+    async getAllAdmin(): Promise<TravelPlanDto[]> {
+        const res = await api.get<TravelPlanDto[]>("/travelPlan/all");
+        return res.data;
+    },
+
     async getById(id: string): Promise<TravelPlanDto> {
         const res = await api.get<TravelPlanDto>(
             `/travelPlan/${id}`

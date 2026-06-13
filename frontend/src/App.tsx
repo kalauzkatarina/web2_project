@@ -14,6 +14,7 @@ import EditDestinationPage from './pages/destination/EditDestinationPage';
 import CreateActivityPage from './pages/activity/CreateActivityPage';
 import EditActivityPage from './pages/activity/EditActivityPage';
 import ActivityCalendarPage from './pages/activity/ActivityCalendarPage';
+import SharedPlanPage from './pages/shareToken/SharedPlanPage';
 
 function App() {
   return (
@@ -116,10 +117,16 @@ function App() {
             element={
               <ProtectedRoute>
                 <MainLayout>
-                  < ActivityCalendarPage/>
+                  < ActivityCalendarPage />
                 </MainLayout>
               </ProtectedRoute>
             }
+          />
+
+          {/*Protected route ne treba jer je poenta da mogu i oni pristupiti koji nisu ulogovani */}
+          <Route
+            path="/shared/:token"
+            element={<SharedPlanPage />}
           />
 
           {/* Fallback ako neko kuca nepostojeću putanju */}

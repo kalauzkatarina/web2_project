@@ -80,7 +80,9 @@ namespace Web_Api.Controllers.Destination
             if (userId == Guid.Empty)
                 return Unauthorized(new { Message = "Invalid token." });
 
-            var result = await _travelPlanService.UpdateDestinationAsync(destinationId, userId, dto);
+            var role = ClaimsPrincipalHelper.GetUserRole(User);
+
+            var result = await _travelPlanService.UpdateDestinationAsync(destinationId, userId, dto, role);
             if (result.IsSuccess)
                 return Ok(new { Message = "Destination updated successfully." });
 
@@ -97,7 +99,9 @@ namespace Web_Api.Controllers.Destination
             if (userId == Guid.Empty)
                 return Unauthorized(new { Message = "Invalid token." });
 
-            var result = await _travelPlanService.DeleteDestinationAsync(destinationId, userId);
+            var role = ClaimsPrincipalHelper.GetUserRole(User);
+
+            var result = await _travelPlanService.DeleteDestinationAsync(destinationId, userId, role);
             if (result.IsSuccess)
                 return Ok(new { Message = "Destination deleted successfully." });
 

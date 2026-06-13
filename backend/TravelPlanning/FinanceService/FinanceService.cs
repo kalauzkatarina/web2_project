@@ -148,7 +148,7 @@ namespace FinanceService
             }
         }
 
-        public async Task<Result<BudgetSummaryDto>> GetBudgetSummaryAsync(Guid planId, Guid userId)
+        public async Task<Result<BudgetSummaryDto>> GetBudgetSummaryAsync(Guid planId, Guid userId, string role)
         {
             //dohvati plannedBudget iz TravelPlanService
             double plannedBudget = 0;
@@ -157,7 +157,7 @@ namespace FinanceService
                 var travelPlanProxy = ServiceProxy.Create<ITravelPlanService>(
                     new Uri("fabric:/TravelPlanning/TravelPlanService"));
 
-                var planResult = await travelPlanProxy.GetPlanByIdAsync(planId, userId);
+                var planResult = await travelPlanProxy.GetPlanByIdAsync(planId, userId, role);
                 if (!planResult.IsSuccess)
                     return Result<BudgetSummaryDto>.Failure("Travel plan not found.");
 

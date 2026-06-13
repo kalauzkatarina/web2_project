@@ -47,14 +47,14 @@ namespace TravelPlanService.Services
             return Result<DestinationDto>.Success(DestinationMapper.ToDto(created));
         }
 
-        public async Task<Result<bool>> DeleteAsync(Guid destinationId, Guid userId)
+        public async Task<Result<bool>> DeleteAsync(Guid destinationId, Guid userId, string role)
         {
             var destination = await _destinationRepository.GetByIdAsync(destinationId);
             if (destination == null)
                 return Result<bool>.Failure("Destination not found.");
 
             var plan = await _travelPlanRepository.GetByIdAsync(destination.TravelPlanId);
-            if (plan == null || plan.UserId != userId)
+            if (plan == null || (plan.UserId != userId && role != "Admin"))
                 return Result<bool>.Failure("You are not authorized to delete this destination.");
 
             var success = await _destinationRepository.DeleteAsync(destinationId);
@@ -90,14 +90,14 @@ namespace TravelPlanService.Services
             return Result<DestinationDto>.Success(DestinationMapper.ToDto(destination));
         }
 
-        public async Task<Result<bool>> UpdateAsync(Guid destinationId, Guid userId, UpdateDestionationDto dto)
+        public async Task<Result<bool>> UpdateAsync(Guid destinationId, Guid userId, UpdateDestionationDto dto, string role)
         {
             var destination = await _destinationRepository.GetByIdAsync(destinationId);
             if (destination == null)
                 return Result<bool>.Failure("Destination not found.");
 
             var plan = await _travelPlanRepository.GetByIdAsync(destination.TravelPlanId);
-            if (plan == null || plan.UserId != userId)
+            if (plan == null || (plan.UserId != userId && role != "Admin"))
                 return Result<bool>.Failure("You are not authorized to delete this destination.");
 
             if (dto.DepartureDate < dto.ArrivalDate)

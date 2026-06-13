@@ -13,7 +13,7 @@ namespace TravelPlanService.Interfaces
         Task<Result<DestinationDto>> AddAsync(Guid userId, AddDestinationDto dto);
         Task<Result<List<DestinationDto>>> GetByPlanAsync(Guid planId, Guid userId);
         Task<Result<DestinationDto>> GetByIdAsync(Guid destinationId, Guid userId);
-        Task<Result<bool>> UpdateAsync(Guid destinationId, Guid userId, UpdateDestionationDto dto);
-        Task<Result<bool>> DeleteAsync(Guid destinationId, Guid userId);
+        Task<Result<bool>> UpdateAsync(Guid destinationId, Guid userId, UpdateDestionationDto dto, string role);
+        Task<Result<bool>> DeleteAsync(Guid destinationId, Guid userId, string role);
     }
 }
