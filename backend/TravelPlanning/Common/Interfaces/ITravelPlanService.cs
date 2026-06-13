@@ -18,6 +18,7 @@ namespace Common.Interfaces
         Task<Result<TravelPlanDto>> GetPlanByIdAsync(Guid planId, Guid userId, string role);
         Task<Result<bool>> UpdatePlanAsync(Guid planId, Guid userId, UpdateTravelPlanDto dto, string role);
         Task<Result<bool>> DeletePlanAsync(Guid planId, Guid userId, string role);
+        Task<Result<bool>> DeleteAllByUserAsync(Guid userId);
 
         //Destinations
         Task<Result<DestinationDto>> AddDestinationAsync(Guid userId, AddDestinationDto dto);

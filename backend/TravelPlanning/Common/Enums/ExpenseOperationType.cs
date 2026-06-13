@@ -10,6 +10,7 @@ namespace Common.Enums
     {
         Add,
         Update,
-        Delete
+        Delete,
+        DeleteAllByPlan
     }
 }

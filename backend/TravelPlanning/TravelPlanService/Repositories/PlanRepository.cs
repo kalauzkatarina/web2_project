@@ -76,5 +76,12 @@ namespace TravelPlanService.Repositories
             var result = await _context.SaveChangesAsync();
             return result > 0;
         }
+
+        public async Task<int> DeleteAllByUserIdAsync(Guid userId)
+        {
+            var plans = await _context.TravelPlans.Where(tp => tp.UserId == userId).ToListAsync();
+            _context.TravelPlans.RemoveRange(plans); //kaskadno ce obrisati destinacije/aktivnosti, to ima u DbContext fajlu
+            return await _context.SaveChangesAsync();
+        }
     }
 }

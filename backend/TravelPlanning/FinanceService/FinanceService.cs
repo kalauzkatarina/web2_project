@@ -134,17 +134,17 @@ namespace FinanceService
 
         public async Task<Result<bool>> DeleteExpensesByPlanAsync(Guid planId)
         {
-            using (var scope = _serviceProvider.CreateScope())
+            using (var tx = StateManager.CreateTransaction())
             {
-                var repo = scope.ServiceProvider.GetRequiredService<IExpenseRepository>();
-                var success = await repo.DeleteByPlanIdAsync(planId);
+                await _sqlQueue.EnqueueAsync(tx, new ExpenseQueueItem
+                {
+                    OperationType = ExpenseOperationType.DeleteAllByPlan,
+                    Payload = JsonSerializer.Serialize(planId),
+                    UserId = Guid.Empty
+                });
 
-                if (success)
-                    await _cacheHelper.RemoveAsync(planId);
-
-                return success
-                    ? Result<bool>.Success(true)
-                    : Result<bool>.Failure("Failed to delete expenses.");
+                await tx.CommitAsync();
+                return Result<bool>.Success(true);
             }
         }
 

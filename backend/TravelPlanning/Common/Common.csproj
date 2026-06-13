@@ -181,6 +181,7 @@
     <Compile Include="DTOs\travelPlan\UpdateTravelPlanDto.cs" />
     <Compile Include="DTOs\user\LoginDto.cs" />
     <Compile Include="DTOs\user\RegisterDto.cs" />
+    <Compile Include="DTOs\user\UpdateUserRoleDto.cs" />
     <Compile Include="DTOs\user\UserDto.cs" />
     <Compile Include="Enums\AccessType.cs" />
     <Compile Include="Enums\ActivityStatus.cs" />

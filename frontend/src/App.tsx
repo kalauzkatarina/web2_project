@@ -15,11 +15,29 @@ import CreateActivityPage from './pages/activity/CreateActivityPage';
 import EditActivityPage from './pages/activity/EditActivityPage';
 import ActivityCalendarPage from './pages/activity/ActivityCalendarPage';
 import SharedPlanPage from './pages/shareToken/SharedPlanPage';
+import UsersPage from './pages/admin/UsersPage';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={true}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+          toastStyle={{
+            borderRadius: '16px',
+            fontFamily: 'inherit'
+          }}
+        />
         <Routes>
 
           <Route path="/login" element={<LoginPage />} />
@@ -127,6 +145,17 @@ function App() {
           <Route
             path="/shared/:token"
             element={<SharedPlanPage />}
+          />
+
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <UsersPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
           />
 
           {/* Fallback ako neko kuca nepostojeću putanju */}

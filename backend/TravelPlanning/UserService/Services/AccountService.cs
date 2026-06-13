@@ -109,5 +109,32 @@ namespace UserService.Services
             var token = _jwtService.CreateToken(user.Id, user.Email, user.Role.ToString());
             return Result<string>.Success(token);
         }
+
+        public async Task<Result<bool>> UpdateUserRole(Guid adminId, Guid targetUserId, UserRole newRole)
+        {
+            var targetUser = await _userRepository.GetByIdAsync(targetUserId);
+            if (targetUser == null) return Result<bool>.Failure("User not found.");
+
+            // sprecava admina da promeni samom sebi rolu
+            if (adminId == targetUserId)
+            {
+                return Result<bool>.Failure("You cannot change your own role.");
+            }
+
+            //sprecava brisanje poslednjeg admina
+            if (targetUser.Role == UserRole.Admin && newRole != UserRole.Admin)
+            {
+                var adminCount = await _userRepository.CountByRoleAsync(UserRole.Admin);
+                if (adminCount <= 1)
+                {
+                    return Result<bool>.Failure("Cannot remove the last Admin from the system.");
+                }
+            }
+
+            targetUser.Role = newRole;
+            await _userRepository.UpdateAsync(targetUser);
+
+            return Result<bool>.Success(true);
+        }
     }
 }

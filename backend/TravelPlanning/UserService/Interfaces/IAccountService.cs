@@ -1,4 +1,5 @@
 ﻿using Common.DTOs.user;
+using Common.Enums;
 using Common.Models;
 using System;
 using System.Collections.Generic;
@@ -15,5 +16,6 @@ namespace UserService.Interfaces
         Task<Result<List<UserDto>>> GetAllUsers();
         Task<Result<bool>> DeleteUser(Guid userId);
         Task<Result<UserDto>> GetUserById (Guid id);
+        Task<Result<bool>> UpdateUserRole(Guid adminId, Guid targetUserId, UserRole newRole);
     }
 }

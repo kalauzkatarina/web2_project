@@ -1,4 +1,5 @@
 ﻿using Common.DTOs.user;
+using Common.Enums;
 using Common.Models;
 using Microsoft.ServiceFabric.Services.Remoting;
 using System;
@@ -16,5 +17,6 @@ namespace Common.Interfaces
         Task<Result<List<UserDto>>> GetAllUsers();
         Task<Result<bool>> DeleteUser(Guid userId);
         Task<Result<UserDto>> GetUserById(Guid userId);
+        Task<Result<bool>> UpdateUserRole(Guid adminId, Guid targetUserId, UserRole newRole);
     }
 }

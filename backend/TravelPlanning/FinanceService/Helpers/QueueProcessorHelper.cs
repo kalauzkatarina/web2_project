@@ -59,6 +59,9 @@ namespace FinanceService.Helpers
                             case ExpenseOperationType.Delete:
                                 await HandleDeleteAsync(command.Payload, command.UserId);
                                 break;
+                            case ExpenseOperationType.DeleteAllByPlan:
+                                await HandleDeleteAllAsync(command.Payload);
+                                break;
                         }
 
                         await tx.CommitAsync();
@@ -172,6 +175,20 @@ namespace FinanceService.Helpers
             {
                 // Ako parsiranje JSON-a ne uspe, znači da je payload običan Guid (ručno brisanje)
             }
+        }
+
+        private async Task HandleDeleteAllAsync(string payload)
+        {
+            var planId = JsonSerializer.Deserialize<Guid>(payload);
+
+            using var scope = _serviceProvider.CreateScope();
+            var repo = scope.ServiceProvider.GetRequiredService<IExpenseRepository>();
+
+            await repo.DeleteByPlanIdAsync(planId);
+
+            await _cacheHelper.RemoveAsync(planId);
+
+            _logger.LogInformation("SQL: Obrišeni svi troškovi za PlanId: {0}", planId);
         }
     }
 }

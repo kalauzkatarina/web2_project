@@ -1,21 +1,23 @@
+using Common.DTOs.user;
+using Common.Enums;
+using Common.Interfaces;
+using Common.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.ServiceFabric.Services.Communication.Runtime;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
+using Microsoft.ServiceFabric.Services.Remoting.Runtime;
+using Microsoft.ServiceFabric.Services.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Fabric;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.ServiceFabric.Services.Communication.Runtime;
-using Microsoft.ServiceFabric.Services.Runtime;
-using Microsoft.ServiceFabric.Services.Remoting.Runtime;
-using Microsoft.Extensions.DependencyInjection;
 using UserService.Context;
-using Microsoft.EntityFrameworkCore;
 using UserService.Interfaces;
 using UserService.Repositories;
 using UserService.Services;
-using Common.Interfaces;
-using Common.DTOs.user;
-using Common.Models;
 
 namespace UserService
 {
@@ -48,7 +50,26 @@ namespace UserService
             using (var scope = _serviceProvider.CreateScope())
             {
                 var accountService = scope.ServiceProvider.GetRequiredService<IAccountService>();
-                return await accountService.DeleteUser(userId);
+
+                var result = await accountService.DeleteUser(userId);
+
+                if (result.IsSuccess)
+                {
+                    try
+                    {
+                        var travelPlanProxy = ServiceProxy.Create<ITravelPlanService>(
+                            new Uri("fabric:/TravelPlanning/TravelPlanService"));
+
+                        await travelPlanProxy.DeleteAllByUserAsync(userId);
+                    }
+                    catch (Exception ex)
+                    {
+                        ServiceEventSource.Current.ServiceMessage(this.Context,
+                            "Greška pri kaskadnom brisanju planova za korisnika {0}: {1}", userId, ex.Message);
+                    }
+                }
+
+                return result;
             }
         }
 
@@ -67,6 +88,15 @@ namespace UserService
             {
                 var accountService = scope.ServiceProvider.GetRequiredService<IAccountService>();
                 return await accountService.GetUserById(userId);
+            }
+        }
+
+        public async Task<Result<bool>> UpdateUserRole(Guid adminId, Guid targetUserId, UserRole newRole)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var accountService = scope.ServiceProvider.GetRequiredService<IAccountService>();
+                return await accountService.UpdateUserRole(adminId, targetUserId, newRole);
             }
         }
 

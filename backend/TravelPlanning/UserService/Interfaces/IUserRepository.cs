@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,5 +16,6 @@ namespace UserService.Interfaces
         Task AddAsync(User user);
         Task UpdateAsync(User user);
         Task<bool> DeleteAsync(Guid id);
+        Task<int> CountByRoleAsync(UserRole role);
     }
 }

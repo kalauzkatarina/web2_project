@@ -16,5 +16,6 @@ namespace TravelPlanService.Interfaces
         Task<TravelPlan?> GetByShareTokenAsync(string token);
         Task<bool> UpdateAsync(TravelPlan plan);
         Task<bool> DeleteAsync(Guid planId);
+        Task<int> DeleteAllByUserIdAsync(Guid userId);
     }
 }

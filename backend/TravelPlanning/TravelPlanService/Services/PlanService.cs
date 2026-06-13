@@ -114,5 +114,12 @@ namespace TravelPlanService.Services
                 ? Result<bool>.Success(true)
                 : Result<bool>.Failure("Failed to update travel plan.");
         }
+
+        public async Task<Result<bool>> DeleteAllByUserAsync(Guid userId)
+        {
+            // Ovde ne treba provera uloge jer ovo poziva interni AccountService
+            await _travelPlanRepository.DeleteAllByUserIdAsync(userId);
+            return Result<bool>.Success(true);
+        }
     }
 }

@@ -115,6 +115,8 @@ export default function DestinationCard({
             >
                 <FiCalendar />
                 {new Date(destination.arrivalDate).toLocaleDateString()}
+                {" - "}
+                {new Date(destination.departureDate).toLocaleDateString()}
             </div>
 
             {destination.description && (

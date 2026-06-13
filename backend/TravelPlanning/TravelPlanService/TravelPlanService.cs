@@ -1,8 +1,9 @@
-using Common.DTOs.travelPlan;
+﻿using Common.DTOs.travelPlan;
 using Common.Interfaces;
 using Common.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.ServiceFabric.Services.Client;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
 using Microsoft.ServiceFabric.Services.Remoting.Runtime;
@@ -122,8 +123,68 @@ namespace TravelPlanService
                     {
                         //logovanje greske
                         ServiceEventSource.Current.ServiceMessage(this.Context,
-                            "Gre�ka pri kaskadnom brisanju checkliste za plan {0}: {1}", planId, ex.Message);
+                            "Greška pri kaskadnom brisanju checkliste za plan {0}: {1}", planId, ex.Message);
                     }
+                }
+
+                return result;
+            }
+        }
+
+        public async Task<Result<bool>> DeleteAllByUserAsync(Guid userId)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var travelPlanService = scope.ServiceProvider.GetRequiredService<IPlanService>();
+
+                var plans = await travelPlanService.GetAllByUserAsync(userId);
+
+                if (!plans.IsSuccess)
+                    return Result<bool>.Failure(plans.ErrorMessage);
+
+                // Ako korisnik nema planove, samo se brise korisnik (nema šta da se kaskadno čisti)
+                if (plans.Data == null || !plans.Data.Any())
+                    return await travelPlanService.DeleteAllByUserAsync(userId);
+
+                var checklistProxy = ServiceProxy.Create<IChecklistService>(
+                    new Uri("fabric:/TravelPlanning/ChecklistService"));
+
+                var financeProxy = ServiceProxy.Create<IFinanceService>(
+                    new Uri("fabric:/TravelPlanning/FinanceService"),
+                    new ServicePartitionKey(0));
+
+                foreach (var plan in plans.Data)
+                {
+                    // Brisanje checkliste
+                    try
+                    {
+                        await checklistProxy.DeleteByPlanAsync(plan.Id);
+                    }
+                    catch (Exception ex)
+                    {
+                        ServiceEventSource.Current.ServiceMessage(this.Context,
+                            "Greška pri brisanju checkliste za plan {0}: {1}", plan.Id, ex.Message);
+                    }
+
+                    // Brisanje finansija/troškova
+                    try
+                    {
+                        await financeProxy.DeleteExpensesByPlanAsync(plan.Id);
+                    }
+                    catch (Exception ex)
+                    {
+                        ServiceEventSource.Current.ServiceMessage(this.Context,
+                            "Greška pri brisanju troškova za plan {0}: {1}", plan.Id, ex.Message);
+                    }
+                }
+
+                // konacno brisanje samih planova (što povlači brisanje destinacija i aktivnosti u bazi)
+                var result = await travelPlanService.DeleteAllByUserAsync(userId);
+
+                if (!result.IsSuccess)
+                {
+                    ServiceEventSource.Current.ServiceMessage(this.Context,
+                        "Greška pri konačnom brisanju planova za korisnika {0}: {1}", userId, result.ErrorMessage);
                 }
 
                 return result;
