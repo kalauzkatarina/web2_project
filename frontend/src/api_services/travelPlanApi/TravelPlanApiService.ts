@@ -16,13 +16,12 @@ export const travelPlanService: ITravelPlanApiService = {
         return res.data;
     },
 
-    async getById(id: string): Promise<TravelPlanDto> {
-        const res = await api.get<TravelPlanDto>(
-            `/travelPlan/${id}`
-        );
-
+    async getById(id: string, shareToken?: string): Promise<TravelPlanDto> {
+        const params = shareToken ? `?shareToken=${shareToken}` : "";
+        const res = await api.get<TravelPlanDto>(`/travelPlan/${id}${params}`);
         return res.data;
     },
+
 
     async create(
         data: CreateTravelPlanDto
@@ -35,13 +34,10 @@ export const travelPlanService: ITravelPlanApiService = {
         return res.data;
     },
 
-    async update(
-        id: string,
-        data: UpdateTravelPlanDto
-    ): Promise<void> {
-        await api.put(`/travelPlan/${id}`, data);
+    async update(id: string, data: UpdateTravelPlanDto, shareToken?: string): Promise<void> {
+        const params = shareToken ? `?shareToken=${shareToken}` : "";
+        await api.put(`/travelPlan/${id}${params}`, data);
     },
-
     async delete(id: string): Promise<void> {
         await api.delete(`/travelPlan/${id}`);
     },

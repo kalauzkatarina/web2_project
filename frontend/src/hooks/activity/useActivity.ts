@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { ActivityDto } from "../../models/activities/ActivityDto";
 import { activityService } from "../../api_services/activityApi/ActivityApiService";
 
-export function useActivity(id?: string) {
+export function useActivity(id?: string, shareToken?: string) {
 
     const [activity, setActivity] =
         useState<ActivityDto | null>(null);
@@ -16,11 +16,12 @@ export function useActivity(id?: string) {
             return;
 
         activityService
-            .getById(id)
+            .getById(id, shareToken)
             .then(setActivity)
+            .catch(() => setActivity(null))
             .finally(() => setLoading(false));
 
-    }, [id]);
+    }, [id, shareToken]);
 
     return {
         activity,

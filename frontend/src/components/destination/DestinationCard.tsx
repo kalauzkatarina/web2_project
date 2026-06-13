@@ -10,9 +10,14 @@ export default function DestinationCard({
     onDelete,
     onActivityEdit,
     onActivityDelete,
+    shareToken
 }: DestinationCardProps) {
 
     const navigate = useNavigate();
+
+    const addActivityUrl = shareToken
+        ? `/destinations/${destination.id}/activities/create?shareToken=${shareToken}`
+        : `/destinations/${destination.id}/activities/create`;
 
     return (
         <div
@@ -130,7 +135,7 @@ export default function DestinationCard({
 
                 {onActivityEdit &&
                     <button
-                        onClick={() => navigate(`/destinations/${destination.id}/activities/create`)}
+                        onClick={() => navigate(addActivityUrl)}
                         className="px-5 py-3 rounded-xl bg-amber-500 text-white font-semibold hover:bg-amber-600 transition shadow-sm"
                     >
                         + Add Activity

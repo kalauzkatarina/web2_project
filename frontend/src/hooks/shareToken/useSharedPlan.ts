@@ -11,32 +11,25 @@ export function useSharedPlan(
     const [loading, setLoading] =
         useState(true);
 
+     const fetchData = async () => {
+        if (!token) return;
+        try {
+            const result = await shareTokenService.getByToken(token);
+            setData(result);
+        } catch {
+            setData(null);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-
-        if (!token)
-            return;
-
-        const load = async () => {
-
-            try {
-
-                const result =
-                    await shareTokenService.getByToken(token);
-
-                setData(result);
-
-            } finally {
-
-                setLoading(false);
-            }
-        };
-
-        load();
-
+        fetchData();
     }, [token]);
 
     return {
         data,
-        loading
+        loading,
+        refetch: fetchData
     };
 }

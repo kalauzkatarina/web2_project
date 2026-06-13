@@ -13,9 +13,23 @@ export default function LoginPage() {
     //         navigate("/");
     //     };
 
-    const handleSuccess = (token: string) => { // Sada primamo string direktno
-        login(token); // AuthContext prima token
-        navigate("/");
+
+    // const handleSuccess = (token: string) => { // Sada primamo string direktno
+    //     login(token); // AuthContext prima token
+    //     navigate("/");
+    // };
+
+    const handleSuccess = (token: string) => {
+        login(token);
+
+        const pending = localStorage.getItem("pendingShareToken");
+
+        if (pending) {
+            localStorage.removeItem("pendingShareToken");
+            navigate(`/shared/${pending}`);
+        } else {
+            navigate("/");
+        }
     };
 
     return <AuthForm

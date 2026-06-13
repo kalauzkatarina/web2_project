@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTravelPlan } from "../../hooks/travelPlan/useTravelPlan";
 import TravelPlanForm from "../../components/travelPlan/TravelPlanForm";
 import { travelPlanService } from "../../api_services/travelPlanApi/TravelPlanApiService";
@@ -7,10 +7,11 @@ import { HiArrowLeft } from "react-icons/hi";
 export default function EditTravelPlanPage() {
 
     const { id } = useParams();
-
+    const [searchParams] = useSearchParams();
+    const shareToken = searchParams.get("shareToken") ?? undefined;
     const navigate = useNavigate();
 
-    const { plan, loading } = useTravelPlan(id);
+    const { plan, loading } = useTravelPlan(id, shareToken);
 
     if (loading)
         return <div>Loading...</div>;
@@ -24,7 +25,7 @@ export default function EditTravelPlanPage() {
             <div className="max-w-5xl mx-auto px-6 py-10">
 
                 <button
-                    onClick={() => navigate(`/plans/${id}`)}
+                    onClick={() => shareToken ? navigate(`/shared/${shareToken}`) : navigate(`/plans/${id}`)}
                     className="
                         flex
                         items-center
@@ -66,14 +67,14 @@ export default function EditTravelPlanPage() {
                             plannedBudget: plan.plannedBudget,
                             generalNotes: plan.generalNotes,
                         }}
-                        onSubmit={async (data) => {
+                       onSubmit={async (data) => {
+                            await travelPlanService.update(plan.id, data, shareToken);
 
-                            await travelPlanService.update(
-                                plan.id,
-                                data
-                            );
-
-                            navigate(`/plans/${plan.id}`);
+                            if (shareToken) {
+                                navigate(`/shared/${shareToken}`);
+                            } else {
+                                navigate(`/plans/${plan.id}`);
+                            }
                         }}
                     />
                 </div>

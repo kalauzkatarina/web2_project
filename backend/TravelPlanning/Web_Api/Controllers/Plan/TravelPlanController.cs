@@ -1,4 +1,5 @@
 ﻿using Common.DTOs.travelPlan;
+using Common.Enums;
 using Common.Helpers;
 using Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -56,7 +57,7 @@ namespace Web_Api.Controllers.Plan
 
 
         [HttpGet("{planId}")]
-        public async Task<IActionResult> GetPlanById(string planId)
+        public async Task<IActionResult> GetPlanById(string planId, [FromQuery] string? shareToken = null)
         {
             if (!Guid.TryParse(planId, out Guid outId))
                 return BadRequest(new { Message = "Invalid ID format." });
@@ -66,8 +67,17 @@ namespace Web_Api.Controllers.Plan
                 return Unauthorized(new { Message = "Invalid token." });
 
             var role = ClaimsPrincipalHelper.GetUserRole(User);
+            var effectiveUserId = userId;
 
-            var result = await _travelPlanService.GetPlanByIdAsync(outId, userId, role);
+            if (!string.IsNullOrEmpty(shareToken) && role != "Admin")
+            {
+                var tokenResult = await _travelPlanService.GetPlanByShareTokenAsync(shareToken);
+                if (!tokenResult.IsSuccess || tokenResult.Data.AccessType != AccessType.Edit)
+                    return Forbid();
+                effectiveUserId = tokenResult.Data.Plan.UserId;
+            }
+
+            var result = await _travelPlanService.GetPlanByIdAsync(outId, effectiveUserId, role);
             if(result.IsSuccess)
                 return Ok(result.Data);
 
@@ -75,7 +85,7 @@ namespace Web_Api.Controllers.Plan
         }
 
         [HttpPut("{planId}")]
-        public async Task<IActionResult> UpdatePlan(string planId, [FromBody] UpdateTravelPlanDto dto)
+        public async Task<IActionResult> UpdatePlan(string planId, [FromBody] UpdateTravelPlanDto dto, [FromQuery] string? shareToken = null)
         {
             if (!Guid.TryParse(planId, out Guid outId))
                 return BadRequest(new { Message = "Invalid ID format." });
@@ -85,8 +95,17 @@ namespace Web_Api.Controllers.Plan
                 return Unauthorized(new { Message = "Invalid token." });
 
             var role = ClaimsPrincipalHelper.GetUserRole(User);
+            var effectiveUserId = userId;
 
-            var result = await _travelPlanService.UpdatePlanAsync(outId, userId, dto, role);
+            if (!string.IsNullOrEmpty(shareToken) && role != "Admin")
+            {
+                var tokenResult = await _travelPlanService.GetPlanByShareTokenAsync(shareToken);
+                if (!tokenResult.IsSuccess || tokenResult.Data.AccessType != AccessType.Edit)
+                    return Forbid();
+                effectiveUserId = tokenResult.Data.Plan.UserId;
+            }
+
+            var result = await _travelPlanService.UpdatePlanAsync(outId, effectiveUserId, dto, role);
             if (result.IsSuccess)
                 return Ok(new { Message = "Travel plan updated successfully." });
 

@@ -1,12 +1,13 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import ActivityForm from "../../components/activity/ActivityForm";
 import { activityService } from "../../api_services/activityApi/ActivityApiService";
 import { HiArrowLeft } from "react-icons/hi";
 
 export default function CreateActivityPage() {
 
-    const { id } = useParams();
-
+    const { id } = useParams(); //destId
+    const [searchParams] = useSearchParams();
+    const shareToken = searchParams.get("shareToken") ?? undefined;
     const navigate = useNavigate();
 
     return (
@@ -61,11 +62,14 @@ export default function CreateActivityPage() {
                             status: 0,
                             category: 5,
                         }}
-                        onSubmit={async (data) => {
+                         onSubmit={async (data) => {
+                            await activityService.create(data, shareToken);
 
-                            await activityService.create(data);
-
-                            navigate(-1);
+                            if (shareToken) {
+                                navigate(`/shared/${shareToken}`);
+                            } else {
+                                navigate(-1);
+                            }
                         }}
                     />
 

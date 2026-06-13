@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import DestinationForm from "../../components/destination/DestinationForm";
 import { destinationService } from "../../api_services/destinationApi/DestinationApiService";
 import { HiArrowLeft } from "react-icons/hi";
@@ -6,7 +6,8 @@ import { HiArrowLeft } from "react-icons/hi";
 export default function CreateDestinationPage() {
 
     const { id } = useParams();
-
+    const [searchParams] = useSearchParams();
+    const shareToken = searchParams.get("shareToken") ?? undefined;
     const navigate = useNavigate();
 
     return (
@@ -58,11 +59,14 @@ export default function CreateDestinationPage() {
                             departureDate: "",
                             description: "",
                         }}
-                        onSubmit={async (data) => {
+                         onSubmit={async (data) => {
+                            await destinationService.create(data, shareToken);
 
-                            await destinationService.create(data);
-
-                            navigate(`/plans/${id}`);
+                            if (shareToken) {
+                                navigate(`/shared/${shareToken}`);
+                            } else {
+                                navigate(`/plans/${id}`);
+                            }
                         }}
                     />
 

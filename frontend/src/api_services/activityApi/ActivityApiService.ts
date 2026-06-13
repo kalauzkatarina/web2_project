@@ -31,15 +31,9 @@ export const activityService: IActivityApiService = {
         return res.data;
     },
 
-    async getById(
-        id: string
-    ): Promise<ActivityDto> {
-
-        const res =
-            await api.get<ActivityDto>(
-                `/activity/${id}`
-            );
-
+    async getById(id: string, shareToken?: string): Promise<ActivityDto> {
+        const params = shareToken ? `?shareToken=${shareToken}` : "";
+        const res = await api.get<ActivityDto>(`/activity/${id}${params}`);
         return res.data;
     },
 
@@ -55,36 +49,19 @@ export const activityService: IActivityApiService = {
         return res.data;
     },
 
-    async create(
-        data: CreateActivityDto
-    ): Promise<ActivityDto> {
-
-        const res =
-            await api.post<ActivityDto>(
-                "/activity",
-                data
-            );
-
+    async create(data: CreateActivityDto, shareToken?: string): Promise<ActivityDto> {
+        const params = shareToken ? `?shareToken=${shareToken}` : "";
+        const res = await api.post<ActivityDto>(`/activity${params}`, data);
         return res.data;
     },
 
-    async update(
-        id: string,
-        data: UpdateActivityDto
-    ): Promise<void> {
-
-        await api.put(
-            `/activity/${id}`,
-            data
-        );
+    async update(id: string, data: UpdateActivityDto, shareToken?: string): Promise<void> {
+        const params = shareToken ? `?shareToken=${shareToken}` : "";
+        await api.put(`/activity/${id}${params}`, data);
     },
 
-    async delete(
-        id: string
-    ): Promise<void> {
-
-        await api.delete(
-            `/activity/${id}`
-        );
+    async delete(id: string, shareToken?: string): Promise<void> {
+        const params = shareToken ? `?shareToken=${shareToken}` : "";
+        await api.delete(`/activity/${id}${params}`);
     },
 };

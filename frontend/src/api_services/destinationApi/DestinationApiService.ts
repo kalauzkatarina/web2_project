@@ -18,25 +18,23 @@ export const destinationService: IDestinationApiService = {
         return res.data;
     },
 
-    async getById(
-        id: string
-    ): Promise<DestinationDto> {
-
-        const res =
-            await api.get<DestinationDto>(
-                `/destination/${id}`
-            );
-
+    async getById(id: string, shareToken?: string): Promise<DestinationDto> {
+        const params = shareToken ? `?shareToken=${shareToken}` : "";
+        const res = await api.get<DestinationDto>(`/destination/${id}${params}`);
         return res.data;
     },
 
     async create(
-        data: CreateDestinationDto
+        data: CreateDestinationDto, shareToken?: string
     ): Promise<DestinationDto> {
+
+        const params = shareToken
+            ? `?shareToken=${shareToken}`
+            : "";
 
         const res =
             await api.post<DestinationDto>(
-                "/destination",
+                `/destination${params}`,
                 data
             );
 
@@ -45,21 +43,31 @@ export const destinationService: IDestinationApiService = {
 
     async update(
         id: string,
-        data: UpdateDestinationDto
+        data: UpdateDestinationDto,
+        shareToken?: string
     ): Promise<void> {
 
+        const params = shareToken
+            ? `?shareToken=${shareToken}`
+            : "";
+
         await api.put(
-            `/destination/${id}`,
+            `/destination/${id}${params}`,
             data
         );
     },
 
     async delete(
-        id: string
+        id: string,
+        shareToken?: string
     ): Promise<void> {
 
+        const params = shareToken
+            ? `?shareToken=${shareToken}`
+            : "";
+
         await api.delete(
-            `/destination/${id}`
+            `/destination/${id}${params}`
         );
     },
 };

@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import DestinationForm from "../../components/destination/DestinationForm";
 import { destinationService } from "../../api_services/destinationApi/DestinationApiService";
 import { useDestination } from "../../hooks/destination/useDestination";
@@ -7,13 +7,15 @@ import { HiArrowLeft } from "react-icons/hi";
 export default function EditDestinationPage() {
 
     const { id } = useParams();
+    const [searchParams] = useSearchParams();
+    const shareToken = searchParams.get("shareToken") ?? undefined;
 
     const navigate = useNavigate();
 
     const {
         destination,
         loading,
-    } = useDestination(id);
+    } = useDestination(id, shareToken);
 
     if (loading)
         return (
@@ -82,7 +84,6 @@ export default function EditDestinationPage() {
                                 destination.description ?? "",
                         }}
                         onSubmit={async (data) => {
-
                             await destinationService.update(
                                 destination.id,
                                 {
@@ -91,12 +92,16 @@ export default function EditDestinationPage() {
                                     arrivalDate: data.arrivalDate,
                                     departureDate: data.departureDate,
                                     description: data.description,
-                                }
+                                },
+                                shareToken
                             );
 
-                            navigate(
-                                `/plans/${destination.travelPlanId}`
-                            );
+                            if (shareToken) {
+                                // pronađi shareToken iz searchParams i vrati na shared stranicu
+                                navigate(`/shared/${shareToken}`);
+                            } else {
+                                navigate(`/plans/${destination.travelPlanId}`);
+                            }
                         }}
                     />
 

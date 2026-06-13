@@ -6,11 +6,11 @@ export interface IDestinationApiService {
 
     getByPlan(planId: string): Promise<DestinationDto[]>;
 
-    getById(id: string): Promise<DestinationDto>;
+    getById(id: string, shareToken?: string): Promise<DestinationDto>;
 
-    create(data: CreateDestinationDto): Promise<DestinationDto>;
+    create( data: CreateDestinationDto, shareToken?: string): Promise<DestinationDto>;
 
-    update(id: string, data: UpdateDestinationDto): Promise<void>;
+    update(id: string,data: UpdateDestinationDto,shareToken?: string): Promise<void>;
 
-    delete(id: string): Promise<void>;
+    delete(id: string,shareToken?: string): Promise<void>;
 }

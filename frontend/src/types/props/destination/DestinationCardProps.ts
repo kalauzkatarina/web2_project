@@ -6,4 +6,5 @@ export type DestinationCardProps = {
     onDelete?: (id: string) => void;
     onActivityEdit?: (id: string) => void;
     onActivityDelete?: (id: string) => void;
+    shareToken?: string;
 }

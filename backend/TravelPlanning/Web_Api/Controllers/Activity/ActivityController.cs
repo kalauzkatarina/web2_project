@@ -1,4 +1,5 @@
 ﻿using Common.DTOs.travelPlan;
+using Common.Enums;
 using Common.Helpers;
 using Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -20,13 +21,24 @@ namespace Web_Api.Controllers.Activity
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddActivity([FromBody] AddActivityDto dto)
+        public async Task<IActionResult> AddActivity([FromBody] AddActivityDto dto, [FromQuery] string? shareToken = null)
         {
             var userId = ClaimsPrincipalHelper.GetUserId(User);
             if (userId == Guid.Empty)
                 return Unauthorized(new { Message = "Invalid token." });
 
-            var result = await _travelPlanService.AddActivityAsync(userId, dto);
+            var role = ClaimsPrincipalHelper.GetUserRole(User);
+            var effectiveUserId = userId;
+
+            if (!string.IsNullOrEmpty(shareToken) && role != "Admin")
+            {
+                var tokenResult = await _travelPlanService.GetPlanByShareTokenAsync(shareToken);
+                if (!tokenResult.IsSuccess || tokenResult.Data.AccessType != AccessType.Edit)
+                    return Forbid();
+                effectiveUserId = tokenResult.Data.Plan.UserId;
+            }
+
+            var result = await _travelPlanService.AddActivityAsync(effectiveUserId, dto);
             if (result.IsSuccess)
                 return Ok(result.Data);
 
@@ -68,7 +80,7 @@ namespace Web_Api.Controllers.Activity
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(string id)
+        public async Task<IActionResult> GetById(string id, [FromQuery] string? shareToken = null)
         {
             if (!Guid.TryParse(id, out Guid activityId))
                 return BadRequest(new { Message = "Invalid ID format." });
@@ -78,7 +90,18 @@ namespace Web_Api.Controllers.Activity
             if (userId == Guid.Empty)
                 return Unauthorized(new { Message = "Invalid token." });
 
-            var result = await _travelPlanService.GetActivityByIdAsync(activityId, userId);
+            var role = ClaimsPrincipalHelper.GetUserRole(User);
+            var effectiveUserId = userId;
+
+            if (!string.IsNullOrEmpty(shareToken) && role != "Admin")
+            {
+                var tokenResult = await _travelPlanService.GetPlanByShareTokenAsync(shareToken);
+                if (!tokenResult.IsSuccess || tokenResult.Data.AccessType != AccessType.Edit)
+                    return Forbid();
+                effectiveUserId = tokenResult.Data.Plan.UserId;
+            }
+
+            var result = await _travelPlanService.GetActivityByIdAsync(activityId, effectiveUserId);
 
             if (result.IsSuccess)
                 return Ok(result.Data);
@@ -106,7 +129,7 @@ namespace Web_Api.Controllers.Activity
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateActivity(string id, [FromBody] UpdateActivityDto dto)
+        public async Task<IActionResult> UpdateActivity(string id, [FromBody] UpdateActivityDto dto, [FromQuery] string? shareToken = null)
         {
             if (!Guid.TryParse(id, out Guid activityId))
                 return BadRequest(new { Message = "Invalid ID format." });
@@ -116,8 +139,17 @@ namespace Web_Api.Controllers.Activity
                 return Unauthorized(new { Message = "Invalid token." });
 
             var role = ClaimsPrincipalHelper.GetUserRole(User);
+            var effectiveUserId = userId;
 
-            var result = await _travelPlanService.UpdateActivityAsync(activityId, userId, dto, role);
+            if (!string.IsNullOrEmpty(shareToken) && role != "Admin")
+            {
+                var tokenResult = await _travelPlanService.GetPlanByShareTokenAsync(shareToken);
+                if (!tokenResult.IsSuccess || tokenResult.Data.AccessType != AccessType.Edit)
+                    return Forbid();
+                effectiveUserId = tokenResult.Data.Plan.UserId;
+            }
+
+            var result = await _travelPlanService.UpdateActivityAsync(activityId, effectiveUserId, dto, role);
             if (result.IsSuccess)
                 return Ok(new { Message = "Activity updated successfully." });
 
@@ -125,7 +157,7 @@ namespace Web_Api.Controllers.Activity
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteActivity(string id)
+        public async Task<IActionResult> DeleteActivity(string id, [FromQuery] string? shareToken = null)
         {
             if (!Guid.TryParse(id, out Guid activityId))
                 return BadRequest(new { Message = "Invalid ID format." });
@@ -135,8 +167,17 @@ namespace Web_Api.Controllers.Activity
                 return Unauthorized(new { Message = "Invalid token." });
 
             var role = ClaimsPrincipalHelper.GetUserRole(User);
+            var effectiveUserId = userId;
 
-            var result = await _travelPlanService.DeleteActivityAsync(activityId, userId, role);
+            if (!string.IsNullOrEmpty(shareToken) && role != "Admin")
+            {
+                var tokenResult = await _travelPlanService.GetPlanByShareTokenAsync(shareToken);
+                if (!tokenResult.IsSuccess || tokenResult.Data.AccessType != AccessType.Edit)
+                    return Forbid();
+                effectiveUserId = tokenResult.Data.Plan.UserId;
+            }
+
+            var result = await _travelPlanService.DeleteActivityAsync(activityId, effectiveUserId, role);
             if (result.IsSuccess)
                 return Ok(new { Message = "Activity deleted successfully." });
 

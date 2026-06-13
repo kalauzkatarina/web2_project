@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import ActivityForm from "../../components/activity/ActivityForm";
 import { activityService } from "../../api_services/activityApi/ActivityApiService";
 import { useActivity } from "../../hooks/activity/useActivity";
@@ -7,13 +7,14 @@ import { HiArrowLeft } from "react-icons/hi";
 export default function EditActivityPage() {
 
     const { id } = useParams();
-
+    const [searchParams] = useSearchParams();
+    const shareToken = searchParams.get("shareToken") ?? undefined;
     const navigate = useNavigate();
 
     const {
         activity,
         loading,
-    } = useActivity(id);
+    } = useActivity(id, shareToken);
 
     if (loading)
         return <div>Loading...</div>;
@@ -66,14 +67,14 @@ export default function EditActivityPage() {
                             status: activity.status,
                             category: activity.category,
                         }}
-                        onSubmit={async (data) => {
+                       onSubmit={async (data) => {
+                            await activityService.update(activity.id, data, shareToken);
 
-                            await activityService.update(
-                                activity.id,
-                                data
-                            );
-
-                            navigate(-1);
+                            if (shareToken) {
+                                navigate(`/shared/${shareToken}`);
+                            } else {
+                                navigate(-1);
+                            }
                         }}
                     />
 

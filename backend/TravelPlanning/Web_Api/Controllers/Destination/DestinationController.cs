@@ -1,9 +1,11 @@
 ﻿using Common.DTOs.travelPlan;
+using Common.Enums;
 using Common.Helpers;
 using Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
+using System.Data;
 using System.Numerics;
 
 namespace Web_Api.Controllers.Destination
@@ -21,13 +23,23 @@ namespace Web_Api.Controllers.Destination
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddDestination([FromBody] AddDestinationDto dto)
+        public async Task<IActionResult> AddDestination([FromBody] AddDestinationDto dto, [FromQuery] string? shareToken = null)
         {
             var userId = ClaimsPrincipalHelper.GetUserId(User);
             if (userId == Guid.Empty)
                 return Unauthorized(new { Message = "Invalid token." });
 
-            var result = await _travelPlanService.AddDestinationAsync(userId, dto);
+            var effectiveUserId = userId;
+            if (!string.IsNullOrEmpty(shareToken))
+            {
+                var tokenResult = await _travelPlanService.GetPlanByShareTokenAsync(shareToken);
+                if (!tokenResult.IsSuccess || tokenResult.Data.AccessType != AccessType.Edit)
+                    return Forbid();
+
+                effectiveUserId = tokenResult.Data.Plan.UserId;
+            }
+
+            var result = await _travelPlanService.AddDestinationAsync(effectiveUserId, dto);
             if(result.IsSuccess)
                 return Ok(result.Data);
 
@@ -52,7 +64,7 @@ namespace Web_Api.Controllers.Destination
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(string id)
+        public async Task<IActionResult> GetById(string id, [FromQuery] string? shareToken = null)
         {
             if (!Guid.TryParse(id, out Guid destinationId))
                 return BadRequest(new { Message = "Invalid ID format." });
@@ -62,7 +74,19 @@ namespace Web_Api.Controllers.Destination
             if (userId == Guid.Empty)
                 return Unauthorized(new { Message = "Invalid token." });
 
-            var result = await _travelPlanService.GetDestinationByIdAsync(destinationId, userId);
+            var role = ClaimsPrincipalHelper.GetUserRole(User);
+            var effectiveUserId = userId;
+
+            if (!string.IsNullOrEmpty(shareToken) && role != "Admin")
+            {
+                var tokenResult = await _travelPlanService.GetPlanByShareTokenAsync(shareToken);
+                if (!tokenResult.IsSuccess || tokenResult.Data.AccessType != AccessType.Edit)
+                    return Forbid();
+
+                effectiveUserId = tokenResult.Data.Plan.UserId;
+            }
+
+            var result = await _travelPlanService.GetDestinationByIdAsync(destinationId, effectiveUserId);
 
             if (result.IsSuccess)
                 return Ok(result.Data);
@@ -71,7 +95,7 @@ namespace Web_Api.Controllers.Destination
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDestination(string id, [FromBody] UpdateDestionationDto dto)
+        public async Task<IActionResult> UpdateDestination(string id, [FromBody] UpdateDestionationDto dto, [FromQuery] string? shareToken = null)
         {
             if (!Guid.TryParse(id, out Guid destinationId))
                 return BadRequest(new { Message = "Invalid ID format." });
@@ -81,8 +105,20 @@ namespace Web_Api.Controllers.Destination
                 return Unauthorized(new { Message = "Invalid token." });
 
             var role = ClaimsPrincipalHelper.GetUserRole(User);
+            var effectiveUserId = userId;
 
-            var result = await _travelPlanService.UpdateDestinationAsync(destinationId, userId, dto, role);
+            if (!string.IsNullOrEmpty(shareToken) && role != "Admin")
+            {
+                var tokenResult = await _travelPlanService.GetPlanByShareTokenAsync(shareToken);
+
+                if (!tokenResult.IsSuccess || tokenResult.Data.AccessType != AccessType.Edit)
+                    return Forbid();
+
+                // koristi userId vlasnika plana
+                effectiveUserId = tokenResult.Data.Plan.UserId;
+            }
+
+            var result = await _travelPlanService.UpdateDestinationAsync(destinationId, effectiveUserId, dto, role);
             if (result.IsSuccess)
                 return Ok(new { Message = "Destination updated successfully." });
 
@@ -90,7 +126,7 @@ namespace Web_Api.Controllers.Destination
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(string id)
+        public async Task<IActionResult> DeleteAsync(string id, [FromQuery] string? shareToken = null)
         {
             if (!Guid.TryParse(id, out Guid destinationId))
                 return BadRequest(new { Message = "Invalid ID format." });
@@ -100,8 +136,18 @@ namespace Web_Api.Controllers.Destination
                 return Unauthorized(new { Message = "Invalid token." });
 
             var role = ClaimsPrincipalHelper.GetUserRole(User);
+            var effectiveUserId = userId;
 
-            var result = await _travelPlanService.DeleteDestinationAsync(destinationId, userId, role);
+            if (!string.IsNullOrEmpty(shareToken) && role != "Admin")
+            {
+                var tokenResult = await _travelPlanService.GetPlanByShareTokenAsync(shareToken);
+                if (!tokenResult.IsSuccess || tokenResult.Data.AccessType != AccessType.Edit)
+                    return Forbid();
+
+                effectiveUserId = tokenResult.Data.Plan.UserId;
+            }
+
+            var result = await _travelPlanService.DeleteDestinationAsync(destinationId, effectiveUserId, role);
             if (result.IsSuccess)
                 return Ok(new { Message = "Destination deleted successfully." });
 
