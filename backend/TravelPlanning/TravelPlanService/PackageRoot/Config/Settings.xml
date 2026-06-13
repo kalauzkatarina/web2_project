@@ -9,4 +9,9 @@
 	<Section Name="DbConfig">
 		<Parameter Name="TravelDbConnectionString" Value="Server=localhost,1434;Database=TravelDB;User Id=sa;Password=TravelApp2026!#;TrustServerCertificate=True;"/>
 	</Section>
+	<Section Name="AppConfig">
+		<Parameter
+			Name="FrontendUrl"
+			Value="https://overhead-penholder-cattail.ngrok-free.dev" />
+	</Section>
 </Settings>

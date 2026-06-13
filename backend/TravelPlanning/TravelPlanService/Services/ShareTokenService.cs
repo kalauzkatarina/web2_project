@@ -25,9 +25,9 @@ namespace TravelPlanService.Services
             _travelPlanRepository = travelPlanRepository;
         }
 
-        public async Task<Result<ShareTokenDto>> CreateAndSendAsync(Guid userId, CreateShareTokenDto dto, string toEmail)
+        public async Task<Result<ShareTokenDto>> CreateAndSendAsync(Guid userId, CreateShareTokenDto dto, string toEmail, string frontendUrl)
         {
-            var tokenResult = await CreateAsync(userId, dto);
+            var tokenResult = await CreateAsync(userId, dto, frontendUrl);
             if (!tokenResult.IsSuccess)
                 return tokenResult;
 
@@ -58,7 +58,7 @@ namespace TravelPlanService.Services
             return tokenResult;
         }
 
-        public async Task<Result<ShareTokenDto>> CreateAsync(Guid userId, CreateShareTokenDto dto)
+        public async Task<Result<ShareTokenDto>> CreateAsync(Guid userId, CreateShareTokenDto dto, string frontendUrl)
         {
             var plan = await _travelPlanRepository.GetByIdAsync(dto.PlanId);
             if (plan == null)
@@ -80,7 +80,7 @@ namespace TravelPlanService.Services
 
             var created = await _shareTokenRepository.CreateAsync(shareToken);
 
-            return Result<ShareTokenDto>.Success(ShareTokenMapper.ToDto(created));
+            return Result<ShareTokenDto>.Success(ShareTokenMapper.ToDto(created, frontendUrl));
         }
 
         public async Task<Result<SharedTravelPlanDto>> GetPlanByTokenAsync(string token)

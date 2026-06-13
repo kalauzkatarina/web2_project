@@ -10,8 +10,8 @@ namespace TravelPlanService.Interfaces
 {
     public interface IShareTokenService
     {
-        Task<Result<ShareTokenDto>> CreateAsync(Guid userId, CreateShareTokenDto dto);
-        Task<Result<ShareTokenDto>> CreateAndSendAsync(Guid userId, CreateShareTokenDto dto, string toEmail);
+        Task<Result<ShareTokenDto>> CreateAsync(Guid userId, CreateShareTokenDto dto, string frontendUrl);
+        Task<Result<ShareTokenDto>> CreateAndSendAsync(Guid userId, CreateShareTokenDto dto, string toEmail, string frontendUrl);
         Task<Result<SharedTravelPlanDto>> GetPlanByTokenAsync(string token);
     }
 }

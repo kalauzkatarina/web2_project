@@ -32,11 +32,16 @@ namespace TravelPlanService
     internal sealed class TravelPlanService : StatelessService, ITravelPlanService
     {
         private readonly ServiceProvider _serviceProvider;
+        private readonly string _frontendUrl;
         public TravelPlanService(StatelessServiceContext context)
             : base(context)
         {
             var config = context.CodePackageActivationContext
                 .GetConfigurationPackageObject("Config").Settings;
+
+            _frontendUrl = config.Sections["AppConfig"]
+            .Parameters["FrontendUrl"]
+            .Value;
 
             var sqlConn = config.Sections["DbConfig"]
                 .Parameters["TravelDbConnectionString"].Value;
@@ -314,7 +319,7 @@ namespace TravelPlanService
             using (var scope = _serviceProvider.CreateScope())
             {
                 var shareTokenService = scope.ServiceProvider.GetRequiredService<IShareTokenService>();
-                return await shareTokenService.CreateAsync(userId, dto);
+                return await shareTokenService.CreateAsync(userId, dto, _frontendUrl);
             }
         }
 
@@ -324,7 +329,7 @@ namespace TravelPlanService
             {
                 var shareTokenService = scope.ServiceProvider.GetRequiredService<IShareTokenService>();
 
-                return await shareTokenService.CreateAndSendAsync(userId, dto, toEmail);
+                return await shareTokenService.CreateAndSendAsync(userId, dto, toEmail, _frontendUrl);
             }
         }
 

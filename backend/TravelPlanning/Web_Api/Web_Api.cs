@@ -61,9 +61,10 @@ namespace Web_Api
                         {
                             options.AddPolicy("AllowReactApp", policy =>
                             {
-                                policy.WithOrigins("http://localhost:5173") //frontend port
+                                policy.WithOrigins("http://localhost:5173", "https://overhead-penholder-cattail.ngrok-free.dev") //frontend portovi
                                       .AllowAnyMethod()
                                       .AllowAnyHeader();
+
                             });
                         });
 
