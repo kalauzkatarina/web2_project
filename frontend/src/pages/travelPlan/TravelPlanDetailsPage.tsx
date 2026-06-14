@@ -11,10 +11,15 @@ import TravelPlanDestinationsSection from "../../components/travelPlan/TravelPla
 import FinanceSection from "../../components/finance/FinanceSection";
 import { useTravelPlanActions } from "../../hooks/travelPlan/useTravelPlanActions";
 import SharePlanModal from "../../components/sharePlan/SharePlanModal";
+import { generateTravelPlanPdf } from "../../helpers/generateTravelPlanPdf";
+import TravelPlanPdfView from "../../components/travelPlan/TravelPlanPdfView";
 
 export default function TravelPlanDetailsPage() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showShareModal, setShowShareModal] = useState(false);
+    const [showPdf, setShowPdf] = useState(false);
+    const [generatingPdf, setGeneratingPdf] = useState(false);
+
 
     const { id } = useParams();
     const { plan, setPlan, loading } = useTravelPlan(id);
@@ -31,6 +36,21 @@ export default function TravelPlanDetailsPage() {
         setPlan,
         refreshFinanceWithDelay
     );
+
+    const handleDownloadPdf = async () => {
+        setShowPdf(true);
+        setGeneratingPdf(true);
+
+        setTimeout(async () => {
+            await generateTravelPlanPdf(
+                "pdf-content",
+                plan!.title
+            );
+
+            setShowPdf(false);
+            setGeneratingPdf(false);
+        }, 500);
+    };
 
     useEffect(() => {
         refreshFinanceWithDelay();
@@ -77,6 +97,7 @@ export default function TravelPlanDetailsPage() {
                     onEdit={() => navigate(`/plans/${plan.id}/edit`)}
                     onDelete={() => setShowDeleteModal(true)}
                     onShare={() => setShowShareModal(true)}
+                    onDownloadPdf={handleDownloadPdf}
                 />
 
                 <TravelPlanDestinationsSection
@@ -141,6 +162,12 @@ export default function TravelPlanDetailsPage() {
                 planId={plan.id}
                 onClose={() => setShowShareModal(false)}
             />
+
+            {showPdf && (
+                <div className="fixed -left-[9999px] top-0">
+                    <TravelPlanPdfView plan={plan!} />
+                </div>
+            )}
         </div>
     );
 }

@@ -1,5 +1,5 @@
 import { FiEdit2, FiShare2 } from "react-icons/fi";
-import { HiOutlineTrash } from "react-icons/hi";
+import { HiOutlineDownload, HiOutlineTrash } from "react-icons/hi";
 import type { TravelPlanHeaderProps } from "../../types/props/travelPlan/TravelPlanHeaderProps";
 import { AccessType } from "../../enums/AccessType";
 
@@ -10,7 +10,8 @@ export default function TravelPlanHeader({
     onShare,
     showActions = true,
     accessType,
-    showEditButton = false
+    showEditButton = false,
+    onDownloadPdf
 }: TravelPlanHeaderProps) {
     return (
         <div
@@ -60,6 +61,26 @@ export default function TravelPlanHeader({
                             "
                         >
                             <FiShare2 size={18} />
+                        </button>
+
+                        <button
+                            title="Download PDF"
+                            onClick={onDownloadPdf}
+                            className="
+                                p-3
+                                rounded-2xl
+                                bg-white
+                                border  
+                                border-stone-200
+                                text-stone-500
+                                shadow-sm
+                                hover:text-green-600
+                                hover:border-green-300
+                                hover:shadow
+                                transition
+                            "
+                        >
+                            <HiOutlineDownload size={18} />
                         </button>
 
                         <button
