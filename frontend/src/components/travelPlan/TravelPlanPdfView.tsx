@@ -81,7 +81,7 @@ export default function TravelPlanPdfView({ plan }: TravelPlanPdfProps) {
                     <span>€{plan.plannedBudget}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "16px", color: "#6b7280" }}>
-                    <span>Estimated Expenses:</span>
+                   <span>Planned Activity Costs:</span>
                     <span>€{totalCost}</span>
                 </div>
             </div>

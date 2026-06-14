@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/auth/useAuthHook";
+import { FiUser } from "react-icons/fi";
 
 export default function Navbar() {
 
@@ -44,19 +45,30 @@ export default function Navbar() {
 
                 </div>
 
-                <button
-                    onClick={logout}
-                    className="
-                        px-4
-                        py-2
-                        rounded-xl
-                        bg-amber-500
-                        text-white
-                        hover:bg-amber-600
-                    "
-                >
-                    Logout
-                </button>
+                <div className="flex items-center gap-4">
+
+                    <div className="flex items-center gap-2 text-stone-600">
+                        <FiUser size={18} />
+                        <span className="font-medium">
+                            {user?.email}
+                        </span>
+                    </div>
+
+                    <button
+                        onClick={logout}
+                        className="
+                            px-4
+                            py-2
+                            rounded-xl
+                            bg-amber-500
+                            text-white
+                            hover:bg-amber-600
+                        "
+                    >
+                        Logout
+                    </button>
+
+                </div>
 
             </div>
         </nav>
