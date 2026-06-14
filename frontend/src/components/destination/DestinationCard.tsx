@@ -145,14 +145,16 @@ export default function DestinationCard({
 
             {destination.activities.length > 0 ? (
                 <div className="space-y-3">
-                    {destination.activities.map((activity) => (
-                        <ActivityCard
-                            key={activity.id}
-                            activity={activity}
-                            onEdit={onActivityEdit}
-                            onDelete={onActivityDelete}
-                        />
-                    ))}
+                    {[...destination.activities]
+                        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                        .map((activity) => (
+                            <ActivityCard
+                                key={activity.id}
+                                activity={activity}
+                                onEdit={onActivityEdit}
+                                onDelete={onActivityDelete}
+                            />
+                        ))}
                 </div>
             ) : (
                 <p className="text-sm text-stone-400 italic">No activities added yet.</p>

@@ -164,9 +164,17 @@ export default function ActivityForm({
                     <input
                         type="number"
                         name="estimatedCost"
-                        value={form.estimatedCost || ""}
+                        value={form.estimatedCost !== undefined ? form.estimatedCost : ""}
                         placeholder="2500"
                         onChange={handleChange}
+                        onFocus={() => {
+                            if (form.estimatedCost === 0) {
+                                setForm(prev => ({
+                                    ...prev,
+                                    estimatedCost: undefined as any
+                                }));
+                            }
+                        }}
                         className={inputClass(!!errors.estimatedCost)}
                     />
                     <ErrorMsg message={errors.estimatedCost} />
@@ -222,7 +230,7 @@ export default function ActivityForm({
                     <textarea
                         name="description"
                         value={form.description || ""}
-                        placeholder="Describe your trip..."
+                        placeholder="Describe this activity..."
                         onChange={handleChange}
                         rows={3}
                         className={inputClass(!!errors.description)}

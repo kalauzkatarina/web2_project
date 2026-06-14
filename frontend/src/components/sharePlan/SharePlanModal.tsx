@@ -47,32 +47,31 @@ export default function SharePlanModal({
     };
 
     return (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
 
             <div className={`
-                    bg-white
-                    rounded-[2rem]
-                    p-8
-                    w-full
-                    shadow-xl
-                    ${shareData ? "max-w-4xl" : "max-w-lg"}
-                `}>
+            bg-white
+            rounded-[2rem]
+            p-6
+            w-full
+            shadow-xl
+            max-h-[90vh]
+            overflow-y-auto
+            ${shareData ? "max-w-4xl" : "max-w-lg"}
+        `}>
 
-                <h2 className="text-3xl font-bold text-stone-900 mb-6">
+                <h2 className="text-2xl font-bold text-stone-900 mb-4">
                     Share Travel Plan
                 </h2>
 
-                <p className="text-stone-500 mb-6">
+                <p className="text-stone-500 mb-4">
                     Generate a secure link or send it directly by email.
                 </p>
 
-                <div className="space-y-4">
+                <div className="space-y-3">
 
                     <div>
-                        <label className="form-label">
-                            Email (optional)
-                        </label>
-
+                        <label className="form-label">Email (optional)</label>
                         <input
                             type="email"
                             value={email}
@@ -83,40 +82,25 @@ export default function SharePlanModal({
                     </div>
 
                     <div>
-                        <label className="form-label">
-                            Access Type
-                        </label>
-
+                        <label className="form-label">Access Type</label>
                         <select
                             value={accessType}
-                            onChange={(e) =>
-                                setAccessType(Number(e.target.value) as 0 | 1)
-                            }
+                            onChange={(e) => setAccessType(Number(e.target.value) as 0 | 1)}
                             className="form-input"
                         >
-                            <option value={AccessType.View}>
-                                View only
-                            </option>
-
-                            <option value={AccessType.Edit}>
-                                Edit access
-                            </option>
+                            <option value={AccessType.View}>View only</option>
+                            <option value={AccessType.Edit}>Edit access</option>
                         </select>
                     </div>
 
                     <div>
-                        <label className="form-label">
-                            Valid for (days)
-                        </label>
-
+                        <label className="form-label">Valid for (days)</label>
                         <input
                             type="number"
                             min={1}
                             placeholder="1"
                             value={daysValid || ""}
-                            onChange={(e) =>
-                                setDaysValid(Number(e.target.value))
-                            }
+                            onChange={(e) => setDaysValid(Number(e.target.value))}
                             className="form-input"
                         />
                     </div>
@@ -126,22 +110,16 @@ export default function SharePlanModal({
                         disabled={loading}
                         className="btn-primary w-full"
                     >
-                        {loading
-                            ? "Generating..."
-                            : "Generate Share Link"}
+                        {loading ? "Generating..." : "Generate Share Link"}
                     </button>
                 </div>
 
                 {shareData && (
-                    <div className="mt-8 border-t border-stone-200 pt-6">
-
-                        <div className="grid md:grid-cols-2 gap-8">
+                    <div className="mt-6 border-t border-stone-200 pt-5">
+                        <div className="grid md:grid-cols-2 gap-6">
 
                             <div>
-                                <label className="form-label">
-                                    Share Link
-                                </label>
-
+                                <label className="form-label">Share Link</label>
                                 <input
                                     readOnly
                                     value={fullShareUrl}
@@ -150,55 +128,37 @@ export default function SharePlanModal({
 
                                 <button
                                     onClick={copyLink}
-                                    className="
-                                        mt-3
-                                        w-full
-                                        py-3
-                                        rounded-2xl
-                                        border
-                                        border-stone-200
-                                        hover:bg-stone-50
-                                        transition
-                                    "
+                                    className="mt-3 w-full py-2.5 rounded-2xl border border-stone-200 hover:bg-stone-50 transition"
                                 >
                                     Copy Link
                                 </button>
 
                                 {shareData.expiresAt && (
-                                    <p className="text-sm text-stone-500 mt-4">
-                                        Expires:
-                                        {" "}
-                                        {new Date(
-                                            shareData.expiresAt
-                                        ).toLocaleString()}
+                                    <p className="text-sm text-stone-500 mt-3">
+                                        Expires: {new Date(shareData.expiresAt).toLocaleString()}
                                     </p>
                                 )}
                             </div>
 
                             <div className="flex flex-col items-center justify-center">
-                                <QRCodeCanvas
-                                    value={fullShareUrl}
-                                    size={220}
-                                />
-
-                                <p className="text-sm text-stone-500 mt-4 text-center">
+                                <QRCodeCanvas value={fullShareUrl} size={160} />
+                                <p className="text-sm text-stone-500 mt-3 text-center">
                                     Scan to open the travel plan
                                 </p>
                             </div>
 
                         </div>
-
                     </div>
                 )}
+
                 <button
                     onClick={onClose}
-                    className="mt-6 w-full py-3 border rounded-xl border-stone-200 text-stone-600 hover:bg-stone-50 transition"
+                    className="mt-5 w-full py-2.5 border rounded-xl border-stone-200 text-stone-600 hover:bg-stone-50 transition"
                 >
                     Close
                 </button>
 
             </div>
-
         </div>
     );
 }

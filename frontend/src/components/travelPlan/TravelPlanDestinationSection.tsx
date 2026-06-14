@@ -2,8 +2,8 @@ import type { TravelPlanDestinationsSectionProps } from "../../types/props/trave
 import DestinationCard from "../destination/DestinationCard";
 import { HiOutlineCalendar } from "react-icons/hi";
 
-export default function TravelPlanDestinationsSection({ plan, navigate, onEditDestination, onDeleteDestination, onEditActivity, onDeleteActivity, showActions = true, shareToken  }: TravelPlanDestinationsSectionProps) {
-     const addDestinationUrl = shareToken
+export default function TravelPlanDestinationsSection({ plan, navigate, onEditDestination, onDeleteDestination, onEditActivity, onDeleteActivity, showActions = true, shareToken }: TravelPlanDestinationsSectionProps) {
+    const addDestinationUrl = shareToken
         ? `/plans/${plan.id}/destinations/create?shareToken=${shareToken}`
         : `/plans/${plan.id}/destinations/create`;
 
@@ -66,17 +66,19 @@ export default function TravelPlanDestinationsSection({ plan, navigate, onEditDe
                 <div className="bg-white rounded-2xl p-8 text-center text-stone-500 border border-stone-200">No destinations added yet.</div>
             ) : (
                 <div className="space-y-6">
-                    {plan.destinations.map((dest: any) => (
-                        <DestinationCard
-                            key={dest.id}
-                            destination={dest}
-                            onEdit={onEditDestination}
-                            onDelete={onDeleteDestination}
-                            onActivityEdit={onEditActivity}
-                            onActivityDelete={onDeleteActivity}
-                            shareToken={shareToken}
-                        />
-                    ))}
+                    {[...plan.destinations]
+                        .sort((a, b) => new Date(a.arrivalDate).getTime() - new Date(b.arrivalDate).getTime())
+                        .map((dest) => (
+                            <DestinationCard
+                                key={dest.id}
+                                destination={dest}
+                                onEdit={onEditDestination}
+                                onDelete={onDeleteDestination}
+                                onActivityEdit={onEditActivity}
+                                onActivityDelete={onDeleteActivity}
+                                shareToken={shareToken}
+                            />
+                        ))}
                 </div>
             )}
         </div>
