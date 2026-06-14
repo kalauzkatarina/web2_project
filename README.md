@@ -1,6 +1,78 @@
-# TravelPlanning - Microservices System
+# Travel Planner
 
-A robust, scalable travel planning platform built using **Azure Service Fabric** microservices architecture. This system is designed to handle distributed workloads, ensuring high availability and modularity for managing travel itineraries, users, and finances.
+A full-stack travel planning platform built using a **microservices architecture** powered by **Azure Service Fabric**.
+
+The application allows users to create travel plans, manage destinations and activities, track expenses, organize packing checklists, share journeys with other users, and export plans as PDF documents.
+
+---
+
+# Technologies
+
+## Backend
+
+- ASP.NET Core Web API
+- Azure Service Fabric
+- Service Remoting
+- Entity Framework Core
+- SQL Server
+- FluentValidation
+- JWT Authentication
+
+## Frontend
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- React Router
+- Axios
+
+---
+
+# Features
+
+### User Management
+
+- User registration
+- User login
+- JWT authentication
+- Role-based authorization
+- Admin dashboard
+
+### Travel Planning
+
+- Create travel plans
+- Edit travel plans
+- Delete travel plans
+- Manage destinations
+- Manage activities
+- Travel plan notes
+
+### Finance Management
+
+- Planned budget tracking
+- Expense tracking
+- Expense categories
+- Budget summary
+
+### Checklist Management
+
+- Packing list creation
+- Mark items as completed
+- Remove checklist items
+
+### Sharing
+
+- Share travel plans using secure links and QR code
+- View-only access
+- Edit access (requires login)
+- Email notifications via MailingService 
+
+### PDF Export
+
+- Export complete travel plans to PDF
+
+---
 
 ## System Architecture
 
@@ -8,13 +80,58 @@ The project leverages the **Microservices** architectural style, where each serv
 
 <img width="1491" height="890" alt="Arhitektura sistema" src="https://github.com/user-attachments/assets/384d8e1a-1d13-4d48-a857-037ed557b260" />
 
-### Architectural Components:
-* **API Gateway (Web_Api):** A stateless service that acts as the entry point for all client requests, handling routing and communication with backend services.
-* **UserService:** Manages user authentication, registration, and profile management.
-* **TravelPlanService:** (Planned) Handles the core logic of creating and managing itineraries.
-* **FinanceService:** (Planned) Manages budget tracking and expense reports.
-* **Service Remoting:** Utilizes Microsoft Service Fabric Remoting for high-performance communication between services.
+---
 
+### Services
+
+#### Web_Api
+
+Stateless API Gateway responsible for:
+
+- Authentication
+- Request routing
+- Communication with backend services
+
+#### UserService
+
+Responsible for:
+
+- Registration
+- Authentication
+- User management
+- Role management
+
+#### TravelPlanService
+
+Responsible for:
+
+- Travel plans
+- Destinations
+- Activities
+- Shared travel plans
+
+#### FinanceService
+
+Responsible for:
+
+- Budget tracking
+- Expense management
+- Financial summaries
+
+#### ChecklistService
+
+Responsible for:
+
+- Packing lists
+- Checklist item completion
+
+#### MailingService
+
+Responsible for:
+
+- Sending share invitation emails
+- Email notifications with plan share links
+  
 ---
 
 ## Use Case Analysis
@@ -30,16 +147,186 @@ The following diagram illustrates the primary actors and their interactions with
 
 ---
 
-## How to Run
+# Environment Variables
 
-1.  **Prerequisites:**
-    * Visual Studio 2022 with Service Fabric SDK.
-    * Local Service Fabric Cluster (5-node) running.
-2.  **Database Setup:** Update the connection strings in `PackageRoot/Config/Settings.xml` for each service.
-3.  **Deploy:** Press `F5` in Visual Studio to deploy and run the application on your local cluster.
-4.  **Access:** Once deployed, the API Gateway is accessible via `http://localhost:9062/swagger`.
+Create a `.env` file inside the frontend project.
+
+Example:
+
+```env
+VITE_API_BASE_URL=/api
+VITE_FRONTEND_URL=https://your-ngrok-domain.ngrok-free.app
+```
+
+The frontend communicates with the backend through the Vite proxy.
 
 ---
 
-## Design Note
-The architecture and diagrams were designed with a focus on both technical accuracy and visual clarity, bridging the gap between engineering and user-centric design.
+# Vite Configuration
+
+Example `vite.config.ts`:
+
+```ts
+server: {
+    allowedHosts: [
+        "your-ngrok-domain.ngrok-free.app"
+    ],
+    proxy: {
+        "/api": {
+            target: "http://localhost:9062",
+            changeOrigin: true,
+            secure: false,
+        },
+    },
+}
+```
+
+---
+
+# Travel Plan Sharing (ngrok)
+
+To allow external users to access shared travel plans, expose the frontend using ngrok.
+
+Start frontend:
+
+```bash
+npm run dev
+```
+
+Expose frontend:
+
+```bash
+ngrok http 5173
+```
+
+Copy the generated URL:
+
+```text
+https://your-ngrok-domain.ngrok-free.app
+```
+
+Add it to:
+
+```ts
+allowedHosts
+```
+
+inside:
+
+```ts
+vite.config.ts
+```
+
+Because the frontend uses:
+
+```env
+VITE_API_BASE_URL=/api
+```
+
+all API requests are automatically proxied to:
+
+```text
+http://localhost:9062
+```
+
+No separate backend ngrok tunnel is required.
+
+---
+
+# Running the Application
+
+## Prerequisites
+
+- Visual Studio 2022
+- .NET 8 SDK
+- Azure Service Fabric SDK
+- Local Service Fabric Cluster (must be running before F5)
+- SQL Server (localhost, port 1434)
+- Node.js 18+
+- npm
+
+---
+
+## Backend
+
+Start the local Service Fabric cluster.
+
+Open:
+
+```text
+TravelPlanner.sln
+```
+
+Press:
+
+```text
+F5
+```
+
+The API Gateway becomes available at:
+
+```text
+http://localhost:9062/swagger
+```
+
+---
+
+## Frontend
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run:
+
+```bash
+npm run dev
+```
+
+Frontend:
+
+```text
+http://localhost:5173
+```
+
+---
+
+# Database Configuration
+
+Update connection strings in:
+
+```text
+PackageRoot/Config/Settings.xml
+```
+
+for each Service Fabric service.
+
+## Database Migrations
+
+Run migrations for each service using Package Manager Console in Visual Studio.
+
+Select the target project, then run:
+
+```bash
+Add-Migration InitialCreate -Context UserDbContext -Project UserService
+Update-Database -Context UserDbContext -Project UserService
+```
+
+Repeat for each service:
+- `FinanceDbContext` → `FinanceService`
+- `TravelDbContext` → `TravelPlanService`
+- `ChecklistDbContext` → `ChecklistService`
+
+---
+
+# Authors
+
+Developed as a university project demonstrating:
+
+- Microservices Architecture
+- Azure Service Fabric
+- Distributed Systems
+- Modern React Frontend Development
+- Secure Authentication and Authorization
