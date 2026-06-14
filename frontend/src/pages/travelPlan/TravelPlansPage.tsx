@@ -47,8 +47,8 @@ export default function TravelPlansPage() {
                             <button
                                 onClick={() => setFilter("my")}
                                 className={`px-4 py-2 rounded-xl transition-all duration-300 ${filter === "my"
-                                        ? "bg-white shadow-sm text-amber-600 font-bold"
-                                        : "text-stone-500"
+                                    ? "bg-white shadow-sm text-amber-600 font-bold"
+                                    : "text-stone-500"
                                     }`}
                             >
                                 My Journeys
@@ -57,8 +57,8 @@ export default function TravelPlansPage() {
                             <button
                                 onClick={() => setFilter("all")}
                                 className={`px-4 py-2 rounded-xl transition-all duration-300 ${filter === "all"
-                                        ? "bg-white shadow-sm text-amber-600 font-bold"
-                                        : "text-stone-500"
+                                    ? "bg-white shadow-sm text-amber-600 font-bold"
+                                    : "text-stone-500"
                                     }`}
                             >
                                 All Journeys
@@ -91,12 +91,20 @@ export default function TravelPlansPage() {
                     ${switching ? "opacity-60" : "opacity-100"}
                 `}
             >
-                {plans.map((plan) => (
-                    <TravelPlanCard
-                        key={plan.id}
-                        plan={plan}
-                    />
-                ))}
+                {plans.length === 0 ? (
+                    <div className="bg-white rounded-2xl p-8 border border-stone-200 text-center">
+                        <p className="text-stone-500">
+                            No travel plans found.
+                        </p>
+                    </div>
+                ) : (
+                    plans.map((plan) => (
+                        <TravelPlanCard
+                            key={plan.id}
+                            plan={plan}
+                        />
+                    ))
+                )}
             </div>
         </div>
     );

@@ -11,7 +11,8 @@ export default function TravelPlanHeader({
     showActions = true,
     accessType,
     showEditButton = false,
-    onDownloadPdf
+    onDownloadPdf,
+    generatingPdf = false
 }: TravelPlanHeaderProps) {
     return (
         <div
@@ -66,6 +67,7 @@ export default function TravelPlanHeader({
                         <button
                             title="Download PDF"
                             onClick={onDownloadPdf}
+                            disabled={generatingPdf}
                             className="
                                 p-3
                                 rounded-2xl

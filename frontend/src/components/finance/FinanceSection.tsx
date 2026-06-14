@@ -5,7 +5,7 @@ import ExpenseList from "./ExpenseList";
 import { financeService } from "../../api_services/financeApi/FinanceApiService";
 import type { FinanceSectionProps } from "../../types/props/finance/FinanceSectionProps";
 
-export default function FinanceSection({ planId, summary, expenses, onRefresh }: FinanceSectionProps) {
+export default function FinanceSection({ planId, planStartDate, planEndDate, summary, expenses, onRefresh }: FinanceSectionProps) {
     const [showAddExpense, setShowAddExpense] = useState(false);
 
     return (
@@ -25,6 +25,8 @@ export default function FinanceSection({ planId, summary, expenses, onRefresh }:
             {showAddExpense && (
                 <AddExpenseForm
                     planId={planId}
+                    planStartDate={planStartDate}
+                    planEndDate={planEndDate}
                     onClose={() => setShowAddExpense(false)}
                     onAdd={async (data) => {
                         await financeService.addExpense(data);

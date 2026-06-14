@@ -3,6 +3,7 @@ import ActivityForm from "../../components/activity/ActivityForm";
 import { activityService } from "../../api_services/activityApi/ActivityApiService";
 import { useActivity } from "../../hooks/activity/useActivity";
 import { HiArrowLeft } from "react-icons/hi";
+import { useDestination } from "../../hooks/destination/useDestination";
 
 export default function EditActivityPage() {
 
@@ -11,10 +12,8 @@ export default function EditActivityPage() {
     const shareToken = searchParams.get("shareToken") ?? undefined;
     const navigate = useNavigate();
 
-    const {
-        activity,
-        loading,
-    } = useActivity(id, shareToken);
+    const { activity, loading, } = useActivity(id, shareToken);
+    const { destination } = useDestination(activity?.destinationId, shareToken);
 
     if (loading)
         return <div>Loading...</div>;
@@ -56,6 +55,8 @@ export default function EditActivityPage() {
 
                     <ActivityForm
                         submitText="Save Changes"
+                        destinationStartDate={destination?.arrivalDate.split("T")[0]}
+                        destinationEndDate={destination?.departureDate.split("T")[0]}
                         initialValues={{
                             destinationId: activity.destinationId,
                             title: activity.title,

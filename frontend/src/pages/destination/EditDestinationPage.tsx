@@ -3,6 +3,7 @@ import DestinationForm from "../../components/destination/DestinationForm";
 import { destinationService } from "../../api_services/destinationApi/DestinationApiService";
 import { useDestination } from "../../hooks/destination/useDestination";
 import { HiArrowLeft } from "react-icons/hi";
+import { useTravelPlan } from "../../hooks/travelPlan/useTravelPlan";
 
 export default function EditDestinationPage() {
 
@@ -11,11 +12,8 @@ export default function EditDestinationPage() {
     const shareToken = searchParams.get("shareToken") ?? undefined;
 
     const navigate = useNavigate();
-
-    const {
-        destination,
-        loading,
-    } = useDestination(id, shareToken);
+    const { destination, loading } = useDestination(id, shareToken);
+    const { plan } = useTravelPlan(destination?.travelPlanId, shareToken);
 
     if (loading)
         return (
@@ -72,6 +70,8 @@ export default function EditDestinationPage() {
 
                     <DestinationForm
                         submitText="Save Changes"
+                        planStartDate={plan?.startDate.split("T")[0]}
+                        planEndDate={plan?.endDate.split("T")[0]}
                         initialValues={{
                             travelPlanId: destination.travelPlanId,
                             name: destination.name,

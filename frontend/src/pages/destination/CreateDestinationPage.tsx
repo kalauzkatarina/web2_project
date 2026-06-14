@@ -2,6 +2,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import DestinationForm from "../../components/destination/DestinationForm";
 import { destinationService } from "../../api_services/destinationApi/DestinationApiService";
 import { HiArrowLeft } from "react-icons/hi";
+import { useTravelPlan } from "../../hooks/travelPlan/useTravelPlan";
 
 export default function CreateDestinationPage() {
 
@@ -9,6 +10,11 @@ export default function CreateDestinationPage() {
     const [searchParams] = useSearchParams();
     const shareToken = searchParams.get("shareToken") ?? undefined;
     const navigate = useNavigate();
+
+    const { plan, loading } = useTravelPlan(id);
+
+     if (loading)
+        return <div className="min-h-screen bg-[#fafaf9] flex items-center justify-center">Loading...</div>;
 
     return (
         <div className="min-h-screen bg-[#fafaf9]">
@@ -51,6 +57,8 @@ export default function CreateDestinationPage() {
 
                     <DestinationForm
                         submitText="Add Destination"
+                        planStartDate={plan?.startDate.split("T")[0]}
+                        planEndDate={plan?.endDate.split("T")[0]}
                         initialValues={{
                             travelPlanId: id!,
                             name: "",

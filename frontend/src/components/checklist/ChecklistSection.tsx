@@ -4,20 +4,33 @@ import { FiCheck } from "react-icons/fi";
 import { checklistService } from "../../api_services/checklistApi/ChecklistApiService";
 import { useChecklist } from "../../hooks/checklist/useChecklist";
 import type { ChecklistSectionProps } from "../../types/props/checklist/ChecklistSectionProps";
+import type { ChecklistErrors } from "../../types/checklist/ChecklistErrors";
+import { validateChecklistItem } from "../../api_services/validators/checklist/ChecklistItemValidator";
 
 export default function ChecklistSection({ planId }: ChecklistSectionProps) {
     const { items, setItems, loading } = useChecklist(planId);
     const [newTitle, setNewTitle] = useState("");
     const [adding, setAdding] = useState(false);
+    const [errors, setErrors] = useState<ChecklistErrors>({});
 
     const handleAdd = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newTitle.trim()) return;
+        const validationErrors = validateChecklistItem(newTitle);
+
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
 
         try {
-            const created = await checklistService.addItem({ planId, title: newTitle });
+            const created = await checklistService.addItem({
+                planId,
+                title: newTitle
+            });
+
             setItems(prev => [...prev, created]);
             setNewTitle("");
+            setErrors({});
             setAdding(false);
         } catch (error) {
             console.error("Error adding item:", error);
@@ -76,26 +89,46 @@ export default function ChecklistSection({ planId }: ChecklistSectionProps) {
             {adding && (
                 <form
                     onSubmit={handleAdd}
-                    className="bg-white rounded-2xl p-5 border border-stone-200 mb-4 flex gap-3"
+                    className="bg-white rounded-2xl p-5 border border-stone-200 mb-4 flex gap-3 items-start"
                 >
-                    <input
-                        type="text"
-                        placeholder="e.g. Passport, charger, sunscreen..."
-                        value={newTitle}
-                        onChange={(e) => setNewTitle(e.target.value)}
-                        autoFocus
-                        className="flex-1 px-4 py-2 rounded-xl border border-stone-200 focus:outline-none focus:border-amber-400"
-                    />
+                    <div className="flex-1">
+                        <input
+                            type="text"
+                            placeholder="e.g. Passport, charger, sunscreen..."
+                            value={newTitle}
+                            onChange={(e) => {
+                                setNewTitle(e.target.value);
+
+                                if (errors.title) {
+                                    setErrors({});
+                                }
+                            }}
+                            autoFocus
+                            className={`w-full px-4 py-2 rounded-xl border focus:outline-none
+                ${errors.title
+                                    ? "border-red-400"
+                                    : "border-stone-200 focus:border-amber-400"
+                                }`}
+                        />
+
+                        {errors.title && (
+                            <p className="text-red-500 text-xs mt-1">
+                                {errors.title}
+                            </p>
+                        )}
+                    </div>
+
                     <button
                         type="submit"
-                        className="px-5 py-2 rounded-xl bg-amber-500 text-white font-semibold hover:bg-amber-600 transition"
+                        className="self-start px-5 py-2 rounded-xl bg-amber-500 text-white font-semibold hover:bg-amber-600 transition"
                     >
                         Add
                     </button>
+
                     <button
                         type="button"
                         onClick={() => setAdding(false)}
-                        className="px-5 py-2 rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-50 transition"
+                        className="self-start px-5 py-2 rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-50 transition"
                     >
                         Cancel
                     </button>
@@ -114,12 +147,12 @@ export default function ChecklistSection({ planId }: ChecklistSectionProps) {
                         <div
                             key={item.id}
                             className={`bg-white rounded-2xl p-4 border flex items-center gap-4 transition
-                ${item.isCompleted ? "border-green-200 bg-green-50" : "border-stone-200"}`}
+                                    ${item.isCompleted ? "border-green-200 bg-green-50" : "border-stone-200"}`}
                         >
                             <button
                                 onClick={() => handleToggle(item.id)}
                                 className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition flex-shrink-0
-                  ${item.isCompleted
+                                    ${item.isCompleted
                                         ? "bg-green-500 border-green-500 text-white"
                                         : "border-stone-300 hover:border-amber-400"}`}
                             >
@@ -132,7 +165,7 @@ export default function ChecklistSection({ planId }: ChecklistSectionProps) {
 
                             <button
                                 onClick={() => handleDelete(item.id)}
-                                className="p-2 rounded-xl text-stone-400 hover:text-red-500 hover:bg-red-50 transition"
+                                className="p-2 rounded-xl bg-white border border-stone-200 text-stone-500 shadow-sm hover:text-red-500 hover:border-red-300 hover:shadow transition"
                             >
                                 <HiOutlineTrash size={16} />
                             </button>

@@ -37,20 +37,20 @@ export default function TravelPlanDestinationsSection({ plan, navigate, onEditDe
                                 navigate(`/plans/${plan.id}/calendar`)
                             }
                             className="
-                    flex
-                    items-center
-                    gap-2
-                    px-5
-                    py-3
-                    rounded-xl
-                    bg-white
-                    border
-                    border-stone-200
-                    text-stone-700
-                    font-medium
-                    hover:bg-stone-50
-                    transition
-                "
+                                flex
+                                items-center
+                                gap-2
+                                px-5
+                                py-3
+                                rounded-xl
+                                bg-white
+                                border
+                                border-stone-200
+                                text-stone-700
+                                font-medium
+                                hover:bg-stone-50
+                                transition
+                            "
                         >
                             <HiOutlineCalendar
                                 size={20}

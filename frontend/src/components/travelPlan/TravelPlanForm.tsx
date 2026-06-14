@@ -1,6 +1,8 @@
 import { useState } from "react";
 import type { CreateTravelPlanDto } from "../../models/travelPlans/CreateTravelPlanDto";
 import type { TravelPlanFormProps } from "../../types/props/travelPlan/TravelPlanFormProps";
+import type { TravelPlanErrors } from "../../types/travelPlan/TravelPlanErrors";
+import { validateTravelPlan } from "../../api_services/validators/travelPlan/TravelPlanValidator";
 
 export default function TravelPlanForm({
     initialValues,
@@ -8,8 +10,26 @@ export default function TravelPlanForm({
     submitText,
 }: TravelPlanFormProps) {
 
-    const [form, setForm] =
-        useState<CreateTravelPlanDto>(initialValues);
+    const [form, setForm] = useState<CreateTravelPlanDto>(initialValues);
+
+    const [errors, setErrors] = useState<TravelPlanErrors>({});
+
+    const clearError = (field: string) => {
+        setErrors(prev => ({ ...prev, [field]: undefined }));
+    };
+
+    const ErrorMsg = ({ message }: { message?: string }) =>
+        message ? (
+            <p className="text-red-500 text-xs mt-1">
+                {message}
+            </p>
+        ) : null;
+
+    const inputClass = (hasError: boolean) =>
+        `form-input ${hasError
+            ? "border-red-400"
+            : ""
+        }`;
 
     const handleChange = (
         e: React.ChangeEvent<
@@ -25,12 +45,19 @@ export default function TravelPlanForm({
                     ? Number(value)
                     : value,
         }));
+        clearError(name);
     };
 
     const handleSubmit = async (
         e: React.FormEvent
     ) => {
         e.preventDefault();
+        const validationErrors = validateTravelPlan(form);
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
+        setErrors({});
         await onSubmit(form);
     };
 
@@ -41,16 +68,19 @@ export default function TravelPlanForm({
         >
             <div>
                 <label className="form-label">
-                    Journey Title
+                    Journey Title  <span className="text-red-500">*</span>
                 </label>
 
-                <input
-                    name="title"
-                    value={form.title}
-                    onChange={handleChange}
-                    placeholder="Summer in Italy"
-                    className="form-input"
-                />
+                <div>
+                    <input
+                        name="title"
+                        value={form.title}
+                        onChange={handleChange}
+                        placeholder="Summer in Italy"
+                        className={inputClass(!!errors.title)}
+                    />
+                    <ErrorMsg message={errors.title} />
+                </div>
             </div>
 
 
@@ -58,44 +88,53 @@ export default function TravelPlanForm({
                 <label className="form-label">
                     Description
                 </label>
+                <div>
+                    <textarea
+                        name="description"
+                        value={form.description}
 
-                <textarea
-                    name="description"
-                    value={form.description}
-                    onChange={handleChange}
-                    placeholder="Describe your trip..."
-                    className="form-input"
-                />
+                        onChange={handleChange}
+                        placeholder="Describe your trip..."
+                        className={inputClass(!!errors.description)}
+                    />
+                    <ErrorMsg message={errors.description} />
+                </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
 
                 <div>
                     <label className="form-label">
-                        Start Date
+                        Start Date  <span className="text-red-500">*</span>
                     </label>
 
-                    <input
-                        type="date"
-                        name="startDate"
-                        value={form.startDate}
-                        onChange={handleChange}
-                        className="form-input"
-                    />
+                    <div>
+                        <input
+                            type="date"
+                            name="startDate"
+                            value={form.startDate}
+                            onChange={handleChange}
+                            className={inputClass(!!errors.startDate)}
+                        />
+                        <ErrorMsg message={errors.startDate} />
+                    </div>
                 </div>
 
                 <div>
                     <label className="form-label">
-                        End Date
+                        End Date  <span className="text-red-500">*</span>
                     </label>
 
-                    <input
-                        type="date"
-                        name="endDate"
-                        value={form.endDate}
-                        onChange={handleChange}
-                        className="form-input"
-                    />
+                    <div>
+                        <input
+                            type="date"
+                            name="endDate"
+                            value={form.endDate}
+                            onChange={handleChange}
+                            className={inputClass(!!errors.endDate)}
+                        />
+                        <ErrorMsg message={errors.endDate} />
+                    </div>
                 </div>
 
             </div>
@@ -105,14 +144,17 @@ export default function TravelPlanForm({
                     Planned Budget (€)
                 </label>
 
-                <input
-                    type="number"
-                    name="plannedBudget"
-                    value={form.plannedBudget || ""}
-                    onChange={handleChange}
-                    placeholder="2500"
-                    className="form-input"
-                />
+                <div>
+                    <input
+                        type="number"
+                        name="plannedBudget"
+                        value={form.plannedBudget || ""}
+                        onChange={handleChange}
+                        placeholder="2500"
+                        className={inputClass(!!errors.plannedBudget)}
+                    />
+                    <ErrorMsg message={errors.plannedBudget} />
+                </div>
             </div>
 
             <div>

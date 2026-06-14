@@ -3,15 +3,33 @@ import type { CreateActivityDto } from "../../models/activities/CreateActivityDt
 import { ActivityStatus } from "../../enums/ActivityStatus";
 import { ExpenseCategory } from "../../enums/ExpenseCategory";
 import type { ActivityFormProps } from "../../types/props/activity/ActivityFormProps";
+import type { ActivityErrors } from "../../types/activity/ActivityErrors";
+import { validateActivity } from "../../api_services/validators/activity/ActivityValidator";
 
 export default function ActivityForm({
     initialValues,
     onSubmit,
     submitText,
+    destinationStartDate,
+    destinationEndDate
 }: ActivityFormProps) {
 
-    const [form, setForm] =
-        useState<CreateActivityDto>(initialValues);
+    const [form, setForm] = useState<CreateActivityDto>(initialValues);
+    const [errors, setErrors] = useState<ActivityErrors>({});
+
+    const clearError = (field: string) => {
+        setErrors(prev => ({ ...prev, [field]: undefined }));
+    };
+
+    const ErrorMsg = ({ message }: { message?: string }) =>
+        message ? (
+            <p className="text-red-500 text-xs mt-1">
+                {message}
+            </p>
+        ) : null;
+
+    const inputClass = (hasError: boolean) =>
+        `form-input ${hasError ? "border-red-400" : ""}`;
 
     const handleChange = (
         e: React.ChangeEvent<
@@ -32,13 +50,27 @@ export default function ActivityForm({
                         ? Number(value)
                         : value,
         }));
+
+        clearError(name);
     };
 
     const handleSubmit = async (
         e: React.FormEvent
     ) => {
-
         e.preventDefault();
+
+        const validationErrors = validateActivity(
+            form,
+            destinationStartDate,
+            destinationEndDate
+        );
+
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
+
+        setErrors({});
 
         await onSubmit(form);
     };
@@ -51,16 +83,19 @@ export default function ActivityForm({
 
             <div>
                 <label className="form-label">
-                    Title
+                    Title <span className="text-red-500">*</span>
                 </label>
 
-                <input
-                    name="title"
-                    value={form.title || ""}
-                    placeholder="Title of the activity"
-                    onChange={handleChange}
-                    className="form-input"
-                />
+                <div>
+                    <input
+                        name="title"
+                        value={form.title || ""}
+                        placeholder="Title of the activity"
+                        onChange={handleChange}
+                        className={inputClass(!!errors.title)}
+                    />
+                    <ErrorMsg message={errors.title} />
+                </div>
             </div>
 
             <div>
@@ -68,43 +103,54 @@ export default function ActivityForm({
                     Location
                 </label>
 
-                <input
-                    name="location"
-                    value={form.location || ""}
-                    placeholder="Location of the activity"
-                    onChange={handleChange}
-                    className="form-input"
-                />
+                <div>
+                    <input
+                        name="location"
+                        value={form.location || ""}
+                        placeholder="Location of the activity"
+                        onChange={handleChange}
+                        className={inputClass(!!errors.location)}
+                    />
+                    <ErrorMsg message={errors.location} />
+                </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
 
                 <div>
                     <label className="form-label">
-                        Date
+                        Date <span className="text-red-500">*</span>
                     </label>
 
-                    <input
-                        type="date"
-                        name="date"
-                        value={form.date}
-                        onChange={handleChange}
-                        className="form-input"
-                    />
+                    <div>
+                        <input
+                            type="date"
+                            name="date"
+                            value={form.date}
+                            min={destinationStartDate}
+                            max={destinationEndDate}
+                            onChange={handleChange}
+                            className={inputClass(!!errors.date)}
+                        />
+                        <ErrorMsg message={errors.date} />
+                    </div>
                 </div>
 
                 <div>
                     <label className="form-label">
-                        Time
+                        Time <span className="text-red-500">*</span>
                     </label>
 
-                    <input
-                        type="time"
-                        name="time"
-                        value={form.time}
-                        onChange={handleChange}
-                        className="form-input"
-                    />
+                    <div>
+                        <input
+                            type="time"
+                            name="time"
+                            value={form.time}
+                            onChange={handleChange}
+                            className={inputClass(!!errors.time)}
+                        />
+                        <ErrorMsg message={errors.time} />
+                    </div>
                 </div>
 
             </div>
@@ -114,14 +160,17 @@ export default function ActivityForm({
                     Estimated Cost
                 </label>
 
-                <input
-                    type="number"
-                    name="estimatedCost"
-                    value={form.estimatedCost || ""}
-                    placeholder="2500"
-                    onChange={handleChange}
-                    className="form-input"
-                />
+                <div>
+                    <input
+                        type="number"
+                        name="estimatedCost"
+                        value={form.estimatedCost || ""}
+                        placeholder="2500"
+                        onChange={handleChange}
+                        className={inputClass(!!errors.estimatedCost)}
+                    />
+                    <ErrorMsg message={errors.estimatedCost} />
+                </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
@@ -169,13 +218,17 @@ export default function ActivityForm({
                     Description
                 </label>
 
-                <textarea
-                    name="description"
-                    value={form.description || ""}
-                    placeholder="Describe your trip..."
-                    onChange={handleChange}
-                    className="form-input h-32"
-                />
+                <div>
+                    <textarea
+                        name="description"
+                        value={form.description || ""}
+                        placeholder="Describe your trip..."
+                        onChange={handleChange}
+                        rows={3}
+                        className={inputClass(!!errors.description)}
+                    />
+                    <ErrorMsg message={errors.description} />
+                </div>
             </div>
 
             <div className="flex justify-center pt-4">

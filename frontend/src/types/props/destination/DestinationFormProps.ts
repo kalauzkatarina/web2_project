@@ -8,4 +8,7 @@ export interface DestinationFormProps {
     onSubmit: (
         data: CreateDestinationDto
     ) => Promise<void>;
+
+    planStartDate?: string;
+    planEndDate?: string;
 }

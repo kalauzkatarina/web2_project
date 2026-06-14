@@ -8,4 +8,7 @@ export interface ActivityFormProps {
     onSubmit: (
         data: CreateActivityDto
     ) => Promise<void>;
+
+    destinationStartDate?: string;
+    destinationEndDate?: string;
 }

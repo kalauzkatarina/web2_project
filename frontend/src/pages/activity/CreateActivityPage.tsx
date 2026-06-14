@@ -2,6 +2,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import ActivityForm from "../../components/activity/ActivityForm";
 import { activityService } from "../../api_services/activityApi/ActivityApiService";
 import { HiArrowLeft } from "react-icons/hi";
+import { useDestination } from "../../hooks/destination/useDestination";
 
 export default function CreateActivityPage() {
 
@@ -9,6 +10,8 @@ export default function CreateActivityPage() {
     const [searchParams] = useSearchParams();
     const shareToken = searchParams.get("shareToken") ?? undefined;
     const navigate = useNavigate();
+
+    const {destination} = useDestination(id);
 
     return (
         <div className="min-h-screen bg-[#fafaf9]">
@@ -51,6 +54,8 @@ export default function CreateActivityPage() {
 
                     <ActivityForm
                         submitText="Add Activity"
+                        destinationStartDate={destination?.arrivalDate.split("T")[0]}
+                        destinationEndDate={destination?.departureDate.split("T")[0]}
                         initialValues={{
                             destinationId: id!,
                             title: "",

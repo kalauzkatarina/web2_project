@@ -1,15 +1,33 @@
 import { useState } from "react";
 import type { CreateDestinationDto } from "../../models/destinations/CreateDestinationDto";
 import type { DestinationFormProps } from "../../types/props/destination/DestinationFormProps";
+import type { DestinationErrors } from "../../types/destination/DestinationErrors";
+import { validateDestination } from "../../api_services/validators/destination/DestinationValidator";
 
 export default function DestinationForm({
     initialValues,
     onSubmit,
     submitText,
+    planStartDate,
+    planEndDate
 }: DestinationFormProps) {
 
-    const [form, setForm] =
-        useState<CreateDestinationDto>(initialValues);
+    const [form, setForm] = useState<CreateDestinationDto>(initialValues);
+    const [errors, setErrors] = useState<DestinationErrors>({});
+
+    const clearError = (field: string) => {
+        setErrors(prev => ({ ...prev, [field]: undefined }));
+    };
+
+    const ErrorMsg = ({ message }: { message?: string }) =>
+        message ? (
+            <p className="text-red-500 text-xs mt-1">
+                {message}
+            </p>
+        ) : null;
+
+    const inputClass = (hasError: boolean) =>
+        `form-input ${hasError ? "border-red-400" : ""}`;
 
     const handleChange = (
         e: React.ChangeEvent<
@@ -23,6 +41,8 @@ export default function DestinationForm({
             ...prev,
             [name]: value,
         }));
+
+        clearError(name);
     };
 
     const handleSubmit = async (
@@ -30,6 +50,14 @@ export default function DestinationForm({
     ) => {
         e.preventDefault();
 
+        const validationErrors = validateDestination(form, planStartDate, planEndDate);
+
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
+
+        setErrors({});
         await onSubmit(form);
     };
 
@@ -41,60 +69,72 @@ export default function DestinationForm({
 
             <div>
                 <label className="form-label">
-                    Destination Name
+                    Destination Name <span className="text-red-500">*</span>
                 </label>
 
-                <input
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    placeholder="Paris"
-                    className="form-input"
-                />
+                <div>
+                    <input
+                        name="name"
+                        value={form.name}
+                        onChange={handleChange}
+                        placeholder="Paris"
+                        className={inputClass(!!errors.name)}
+                    />
+                    <ErrorMsg message={errors.name} />
+                </div>
             </div>
 
             <div>
                 <label className="form-label">
-                    Location
+                    Location <span className="text-red-500">*</span>
                 </label>
 
-                <input
-                    name="location"
-                    value={form.location}
-                    onChange={handleChange}
-                    placeholder="France"
-                    className="form-input"
-                />
+                <div>
+                    <input
+                        name="location"
+                        value={form.location}
+                        onChange={handleChange}
+                        placeholder="France"
+                        className={inputClass(!!errors.location)}
+                    />
+                    <ErrorMsg message={errors.location} />
+                </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
 
                 <div>
                     <label className="form-label">
-                        Arrival Date
+                        Arrival Date <span className="text-red-500">*</span>
                     </label>
 
                     <input
                         type="date"
                         name="arrivalDate"
                         value={form.arrivalDate}
+                        min={planStartDate}
+                        max={planEndDate}
                         onChange={handleChange}
-                        className="form-input"
+                        className={inputClass(!!errors.arrivalDate)}
                     />
+                    {errors.arrivalDate && <ErrorMsg message={errors.arrivalDate} />}
                 </div>
 
                 <div>
                     <label className="form-label">
-                        Departure Date
+                        Departure Date <span className="text-red-500">*</span>
                     </label>
 
                     <input
                         type="date"
                         name="departureDate"
                         value={form.departureDate}
+                        min={form.arrivalDate || planStartDate}
+                        max={planEndDate}
                         onChange={handleChange}
-                        className="form-input"
+                        className={inputClass(!!errors.departureDate)}
                     />
+                    {errors.departureDate && <ErrorMsg message={errors.departureDate} />}
                 </div>
 
             </div>
@@ -108,8 +148,9 @@ export default function DestinationForm({
                     name="description"
                     value={form.description}
                     onChange={handleChange}
+                    rows={3}
                     placeholder="Describe this destination..."
-                    className="form-input h-32"
+                    className={inputClass(!!errors.description)}
                 />
             </div>
 

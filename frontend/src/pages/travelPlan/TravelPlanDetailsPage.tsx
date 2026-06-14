@@ -98,6 +98,7 @@ export default function TravelPlanDetailsPage() {
                     onDelete={() => setShowDeleteModal(true)}
                     onShare={() => setShowShareModal(true)}
                     onDownloadPdf={handleDownloadPdf}
+                    generatingPdf={generatingPdf}
                 />
 
                 <TravelPlanDestinationsSection
@@ -111,6 +112,8 @@ export default function TravelPlanDetailsPage() {
 
                 <FinanceSection
                     planId={plan.id}
+                    planStartDate={plan.startDate.split("T")[0]}
+                    planEndDate={plan.endDate.split("T")[0]}
                     summary={summary}
                     expenses={expenses}
                     onRefresh={refreshFinanceWithDelay}

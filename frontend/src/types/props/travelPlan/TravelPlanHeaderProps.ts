@@ -11,4 +11,5 @@ export type TravelPlanHeaderProps = {
     accessType?: AccessType;
     showEditButton?: boolean;
     onDownloadPdf?: () => void;
+    generatingPdf?: boolean;
 }
